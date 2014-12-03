@@ -237,8 +237,8 @@ define('admin/plugins/portalmark', ['forum/infinitescroll', 'admin/modules/selec
 				app.alertSuccess(msg);
 			} else {
 				app.alertSuccess('Mark Created!');
-				refreshpage();
 			}
+			refreshpage();
 		});
 	}
 
