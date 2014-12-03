@@ -1,7 +1,7 @@
 {
   "name": "nodebb-plugin-portal-mark",
   "version": "0.0.1",
-  "description": "This plugin can mark Topics use for Portal Web",
+  "description": "This plugin can mark topic as news article for portals site building.",
   "main": "library.js",
   "repository": {
     "type": "git",

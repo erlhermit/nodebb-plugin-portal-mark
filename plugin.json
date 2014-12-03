@@ -1,7 +1,7 @@
 {
 	"id": "nodebb-plugin-portal-mark",
 	"name": "Portal Mark",
-	"description": "This plugin can mark Topics use for Portal Web.",
+	"description": "This plugin can mark topic as news article for portals site building.",
 	"url": "https://github.com/erlgo/nodebb-plugin-portal-mark",
 	"library": "./library.js",
 	"hooks": [
