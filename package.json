@@ -1,25 +1,25 @@
 {
-  "name": "nodebb-plugin-portal-mark",
-  "version": "0.0.1",
-  "description": "This plugin can mark topic as news article for portals site building.",
-  "main": "library.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/erlgo/nodebb-plugin-portal-mark"
-  },
-  "keywords": [
-    "nodebb",
-    "plugin",
-    "portalmark",
-    "web protal"
-  ],
-  "author": {
-    "name": "erlgo",
-    "email": "erlgo@ipc6.com"
-  },
-  "license": "BSD-2-Clause",
-  "bugs": {
-    "url": "https://github.com/erlgo/nodebb-plugin-portal-mark/issues"
-  },
-  "readmeFilename": "README.md"
+	"name": "nodebb-plugin-portal-mark",
+	"version": "0.0.1",
+	"description": "This plugin can mark topic as news article for portals site building.",
+	"main": "library.js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/erlgo/nodebb-plugin-portal-mark"
+	},
+	"keywords": [
+		"nodebb",
+		"plugin",
+		"portalmark",
+		"web protal"
+	],
+	"author": {
+		"name": "erlgo",
+		"email": "erlgo@ipc6.com"
+	},
+	"license": "BSD-2-Clause",
+	"bugs": {
+		"url": "https://github.com/erlgo/nodebb-plugin-portal-mark/issues"
+	},
+	"readmeFilename": "README.md"
 }

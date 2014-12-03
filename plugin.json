@@ -4,11 +4,16 @@
 	"description": "This plugin can mark topic as news article for portals site building.",
 	"url": "https://github.com/erlgo/nodebb-plugin-portal-mark",
 	"library": "./library.js",
-	"hooks": [
-	  { "hook": "static:app.load", "method": "init" },
-	  { "hook": "filter:privileges.topics.get", "method": "restrict.topic" },
-	  { "hook": "filter:admin.header.build", "method": "addAdminNavigation" }
-	],
+	"hooks": [{
+		"hook": "static:app.load",
+		"method": "init"
+	}, {
+		"hook": "filter:privileges.topics.get",
+		"method": "restrict.topic"
+	}, {
+		"hook": "filter:admin.header.build",
+		"method": "addAdminNavigation"
+	}],
 	"staticDirs": {
 		"static": "./static"
 	},
@@ -16,7 +21,7 @@
 		"static/style.less"
 	],
 	"scripts": [
-	  "static/lib/loader.js"
+		"static/lib/loader.js"
 	],
 	"templates": "static/templates"
 }
