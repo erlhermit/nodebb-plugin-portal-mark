@@ -1,27 +1,11 @@
 "use strict";
 //hook topic button action
 $(window).on('action:topic.loaded', function (e, data) {
-	//append needs div
-	//$($('.topic-text')[0]).append('<div class="portalmark-tags pull-right inline-block">nihi----</div>');
-	//thread-tools btn-group thread-tools dropup dropdown-menu pull-right delete_thread portalmark/mark_thread
-	$(document).ready(function () {
-
-		console.info("mark------asdf " + ajaxify);
-		ajaxify.loadTemplate('topic', function (threadTpl) {
-			var html = "";
-			//html = templates.parse(templates.getBlock(threadTpl, 'mark_thread'), {
-			//		mark_thread: [{}]
-			//});
-			//$('.thread-tools .dropdown-menu').append(html);
-			console.info("mark------loaded "＋
-				threadTpl);
+	var socketId = 'nodebb-plugin-portal-mark';
+	if ($('div.topic').length > 0) {
+		require(['forum/topic/portalmark'], function start(portalmark) {
+			portalmark.init(socketId);
+			portalmark.loadMark();
 		});
-		//hook topic button action
-		if ($('.portalmark_thread').length > 0) {
-			$('.portalmark_thread').on('click', function () {
-				alert('.portalmark_thread click');
-			});
-		}
-
-	})
+	}
 });

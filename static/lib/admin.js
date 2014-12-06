@@ -7,7 +7,6 @@ define('admin/plugins/portalmark', ['forum/infinitescroll', 'admin/modules/selec
 		//handleColorPickers();
 		selectable.enable('.tag-management', '.tag-row');
 		handleNew();
-		//handleSearch();
 		handleModify();
 		handleDeleteSelected();
 	};
@@ -164,37 +163,9 @@ define('admin/plugins/portalmark', ['forum/infinitescroll', 'admin/modules/selec
 					}
 					marksToDelete.remove();
 					app.alertSuccess('Marks removed!');
+					refreshpage();
 				});
 			});
-		});
-	}
-
-	function handleSearch() {
-		$('#tag-search').on('input propertychange', function () {
-			if (timeoutId) {
-				clearTimeout(timeoutId);
-				timeoutId = 0;
-			}
-
-			timeoutId = setTimeout(function () {
-				socket.emit('topics.searchAndLoadmarks', {
-					query: $('#mark-search').val()
-				}, function (err, marks) {
-					if (err) {
-						return app.alertError(err.message);
-					}
-
-					infinitescroll.parseAndTranslate('admin/manage/portalmark', 'marks', {
-						marks: marks
-					}, function (html) {
-						$('.mark-list').html(html);
-						utils.makeNumbersHumanReadable(html.find('.human-readable-number'));
-						timeoutId = 0;
-
-						selectable.enable('.mark-management', '.mark-row');
-					});
-				});
-			}, 100);
 		});
 	}
 

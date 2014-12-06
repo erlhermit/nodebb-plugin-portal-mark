@@ -1,4 +1,7 @@
 <div class="marks tags">
+  <div class="alert alert-warning">
+    <strong>Remember that only who was group by 'Master' can management portalmark at pront-end.</strong>
+  </div>
   <!-- IF !marks.length -->
   <div class="alert alert-warning">
     <strong>Your forum does not have any mark tags with portal marks yet!</strong>
@@ -48,17 +51,7 @@
       <div class="panel-heading">Portal Mark Management</div>
       <div class="panel-body">
         <div class="row">
-          <div class="mark-list tag-list">
-            <!-- BEGIN marks -->
-            <div class="mark-row tag-row" data-tag="{marks.tag}" data-toggle="tooltip" data-placement="top" title="<!-- IF marks.parent -->[{marks.parent}] <!-- ENDIF marks.parent -->[TAG] {marks.tag}">
-              <span class="tag-item mark-item" data-tag="{marks.name}" style="<!-- IF marks.parent -->background-color: #cfefbf;<!-- ENDIF marks.parent -->">{marks.name}</span><span class="tag-topic-count">{marks.score}</span>
-              <input type="hidden" data-name="mark-tag" value="{marks.tag}" />
-              <input type="hidden" data-name="mark-name" value="{marks.name}" />
-              <input type="hidden" data-name="mark-parent" value="{marks.parent}" />
-            </div>
-
-            <!-- END marks -->
-          </div>
+          <!-- IMPORT portalmark/mark_list.tpl -->
         </div>
       </div>
     </div>

@@ -9,7 +9,13 @@
 		"method": "init"
 	}, {
 		"hook": "filter:privileges.topics.get",
-		"method": "restrict.topic"
+		"method": "filter.privileges.topics.get"
+	}, {
+		"hook": "filter:topic.thread_tools",
+		"method": "filter.topic.thread_tools"
+	}, {
+		"hook": "filter:topic.get",
+		"method": "filter.topic.get"
 	}, {
 		"hook": "filter:admin.header.build",
 		"method": "addAdminNavigation"
@@ -21,7 +27,8 @@
 		"static/style.less"
 	],
 	"scripts": [
-		"static/lib/loader.js"
+		"static/lib/loader.js",
+		"static/lib/client"
 	],
 	"templates": "static/templates"
 }

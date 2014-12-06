@@ -1,0 +1,16 @@
+{
+	"group.description": "用于发布新闻的群组",
+	"thread_tools.mark": "标记新闻",
+	"thread_tools.unmark": "移除新闻",
+	"thread_tools.unmark_confirm": "确认移除此主题的新闻标记吗？",
+	"mark_topic": "标记新闻",
+	"confirm_mark": "标记",
+	"load_marks": "加载新闻分类",
+	"topic_will_be_marked_to": "此主题将被标记到新闻类型",
+	"topic_marked_by": "%1标记于%2",
+	"disabled_marks_note": "被关闭的分类不会出现",
+	"topic_mark_success": "成功标记主题为新闻类型",
+	"topic_unmark_success": "所选主题的新闻标记已移除！",
+	"topic_unmark_warnning": "你确定要移除主题的新闻标记吗？",
+	"err_mark_tag_no_found": "标记%1 已不存在。"
+}
