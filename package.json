@@ -17,9 +17,16 @@
 		"name": "erlgo",
 		"email": "erlgo@ipc6.com"
 	},
-	"license": "BSD-2-Clause",
+	"license": "MIT",
 	"bugs": {
 		"url": "https://github.com/erlgo/nodebb-plugin-portal-mark/issues"
 	},
-	"readmeFilename": "README.md"
+	"nbbpm": {
+		"compatibility": "^0.5.0"
+	},
+	"readmeFilename": "README.md",
+	"_id": "nodebb-plugin-portal-mark@0.0.1",
+	"_shasum": "20022c434716b873b4130c668566302735f32d11",
+	"_resolved": "https://registry.npmjs.org/nodebb-plugin-portal-mark/-/nodebb-plugin-portal-mark-0.0.1.tgz",
+	"_from": "https://registry.npmjs.org/nodebb-plugin-portal-mark/-/nodebb-plugin-portal-mark-0.0.1.tgz"
 }

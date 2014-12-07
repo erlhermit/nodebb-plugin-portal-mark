@@ -615,17 +615,9 @@ function setupTranslations(app) {
 	});
 }
 
-plugin.init = function (params, callback) {
-
-	var app = params.router,
-		middleware = params.middleware,
-		controllers = params.controllers;
-
-	// We create two routes for every view. One API call, and the actual route itself.
-	// Just add the buildHeader middleware to your route and NodeBB will take care of everything for you.
-
-	app.get('/admin' + config.plugin.route, middleware.applyCSRF, middleware.admin.buildHeader, renderAdmin);
-	app.get('/api/admin' + config.plugin.route, middleware.applyCSRF, renderAdmin);
+plugin.load = function (app, middleware, controllers, callback) {
+	app.get('/admin' + config.plugin.route, middleware.admin.buildHeader, renderAdmin);
+	app.get('/api/admin' + config.plugin.route, renderAdmin);
 
 	SocketPlugins[config.plugin.id] = clientHandlers;
 	SocketAdmin[config.plugin.id] = adminHandlers;
