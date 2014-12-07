@@ -17,7 +17,7 @@
 	"templates": "static/templates",
 	"hooks": [{
 		"hook": "static:app.load",
-		"method": "load"
+		"method": "init"
 	}, {
 		"hook": "filter:privileges.topics.get",
 		"method": "filter.privileges.topics.get"
