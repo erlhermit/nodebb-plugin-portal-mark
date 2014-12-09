@@ -1,6 +1,6 @@
 {
 	"name": "nodebb-plugin-portal-mark",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"description": "This plugin can mark topic as news article for portals site building.",
 	"main": "library.js",
 	"repository": {
