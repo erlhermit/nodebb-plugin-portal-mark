@@ -1,6 +1,6 @@
 {
 	"name": "nodebb-plugin-portal-mark",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"description": "This plugin can mark topic as news article for portals site building.",
 	"main": "library.js",
 	"repository": {
@@ -22,7 +22,7 @@
 		"url": "https://github.com/erlgo/nodebb-plugin-portal-mark/issues"
 	},
 	"nbbpm": {
-		"compatibility": "^0.5.0"
+		"compatibility": "^0.6.0"
 	},
 	"readmeFilename": "README.md"
 }
