@@ -1,4 +1,7 @@
 "use strict";
+$(window).on('action:ajaxify.end', function (event, data) {
+
+});
 //hook topic button action
 $(window).on('action:topic.loaded', function (e, data) {
 	var socketId = 'nodebb-plugin-portal-mark';

@@ -1,6 +1,7 @@
 "use strict";
 var pkgjson = require('./package.json'),
 	pluginjson = require('./plugin.json'),
+	nconf = module.parent.require('nconf'),
 	winston = module.parent.require('winston'),
 	privileges = module.parent.require('./privileges'),
 	User = module.parent.require('./user'),
@@ -16,7 +17,7 @@ var pkgjson = require('./package.json'),
 	SocketAdmin = module.parent.require('./socket.io/admin').plugins,
 	translator = module.parent.require('../public/src/translator'),
 	utils = module.parent.require('../public/src/utils');
-
+// express removal of routes
 (function (protalmark) {
 	var config = {
 		lang: "zh_CN",
@@ -29,11 +30,35 @@ var pkgjson = require('./package.json'),
 			id: pluginjson.id,
 			version: pkgjson.version,
 			description: pluginjson.description,
-			icon: 'fa-bookmark',
-			route: '/plugins/portalmark'
+		},
+		header: {
+			admin: {
+				name: 'Portal Mark',
+				route: '/plugins/portalmark'
+			},
+			portal: {
+				title: '[[portalmark:title.portal]]',
+				text: '[[portalmark:title.portal]]',
+				iconClass: 'fa-newspaper-o',
+				route: '/portal'
+			},
+			article: {
+				title: '[[portalmark:title.article]]',
+				text: '[[portalmark:title.article]]',
+				iconClass: 'fa-rss',
+				route: '/article'
+			},
+			forum: {
+				title: '[[portalmark:title.forum]]',
+				text: '[[portalmark:title.forum]]',
+				iconClass: 'fa-comments',
+				route: '/forum'
+			}
 		},
 		template: {
-			admin: 'admin/plugins/portalmark'
+			admin: 'admin/plugins/portalmark',
+			article: 'article',
+			portal: 'portal'
 		},
 		database: {
 			root: pluginjson.id,
@@ -62,7 +87,6 @@ var pkgjson = require('./package.json'),
 		update: function (socket, data, callback) {
 			if (!data) return callback(new Error('data was null.'));
 			if (!data.tag) return callback(new Error('please set mark tag.'));
-			console.log('update called:', data)
 			var set = {};
 			set[config.database.marks.name] = !data.name ? data.tag : data.name;
 			set[config.database.marks.tag] = data.tag;
@@ -74,7 +98,6 @@ var pkgjson = require('./package.json'),
 			if (!data) return callback(new Error('data was null.'));
 			if (!data.marks) return callback(new Error('please set mark tag.'));
 			async.each(data.marks, function (markTag, next) {
-				console.log('degin remove: tag ', markTag);
 				adminCtl.deleteMarkTag(markTag, next);
 			}, callback);
 		}
@@ -82,7 +105,6 @@ var pkgjson = require('./package.json'),
 
 	var clientHandlers = {
 		marks: function (socket, data, callback) {
-			console.log('get marks called')
 			adminCtl.getMarks(callback);
 		},
 		check: function (socket, data, callback) {
@@ -93,7 +115,6 @@ var pkgjson = require('./package.json'),
 			}, callback);
 		},
 		get: function (socket, data, callback) {
-			console.log('get callged')
 			adminCtl.getTopicMark(data.tid, callback);
 		},
 		mark: function (socket, data, callback) {
@@ -324,7 +345,6 @@ var pkgjson = require('./package.json'),
 				db.delete(config.database.root + ':mark:' + markTag + ':topics', next);
 			}
 		], function (err) {
-			console.log('you did it!')
 			callback(err);
 		});
 	};
@@ -412,7 +432,6 @@ var pkgjson = require('./package.json'),
 					User.getUserFields(result.marker, ['uid', 'username', 'userslug', 'picture', 'status'], function (err, userData) {
 						result.marker = userData;
 						next(null, result);
-						console.log(result);
 					});
 				} else {
 					next(null, result);
@@ -553,6 +572,7 @@ var pkgjson = require('./package.json'),
 	};
 
 
+
 	//for visit control
 	adminCtl.canMark = function (tid, uid, callback) {
 		Groups.isMember(uid, config.group.name, callback);
@@ -578,12 +598,156 @@ var pkgjson = require('./package.json'),
 			db.sortedSetAdd(config.database.root + ':gen:log', tid, Date.now(), callback);
 		});
 	};
+	adminCtl.getGenerateList = function (start, end, callback) {
+
+	};
+
+
+
+
+	/////////////////
+	// middleware
+	/////////////////
+	var middle = {};
+	middle.buildPortalBreadcrumbs = function (req, res, next) {
+		var breadcrumbs = [{
+			text: '[[portalmark:title.portal]]',
+			url: nconf.get('relative_path') + config.header.portal.route
+		}];
+		res.locals.breadcrumbs = breadcrumbs || [];
+		next();
+	};
+	middle.buildArticleBreadcrumbs = function (req, res, next) {
+		var breadcrumbs = [{
+			text: '[[portalmark:title.article]]',
+			url: nconf.get('relative_path') + config.header.article.route
+		}];
+		res.locals.breadcrumbs = breadcrumbs || [];
+		next();
+	};
 
 
 
 
 
 
+
+	///////////////////////
+	//for route controller
+	////////////////////
+	var routeCtl = {};
+	routeCtl.getMarks = function (callback) {
+		adminCtl.getMarks(callback);
+	};
+
+
+	function renderArticle(req, res, next) {
+		res.render(config.template.article, {});
+	}
+
+	function renderPortal(req, res, next) {
+		async.parallel({
+			header: function (next) {
+				res.locals.metaTags = [{
+					name: "title",
+					content: '[[portalmark:title.portal]] | ' + (Meta.config.title || 'NodeBB')
+				}, {
+					name: "description",
+					content: Meta.config.description || ''
+				}, {
+					property: 'og:title',
+					content: '[[portalmark:title.portal]] | ' + 'Index | ' + (Meta.config.title || 'NodeBB')
+				}, {
+					property: 'og:type',
+					content: 'website'
+				}];
+
+				if (Meta.config['brand:logo']) {
+					res.locals.metaTags.push({
+						property: 'og:image',
+						content: Meta.config['brand:logo']
+					});
+				}
+
+				next(null);
+			},
+			marks: function (next) {
+				routeCtl.getMarks(next);
+			}
+		}, function (err, data) {
+			if (err) {
+				return next(err);
+			}
+			data.breadcrumbs = res.locals.breadcrumbs
+			res.render(config.template.portal, data);
+		});
+	}
+
+	//copy from controllers.home change use template 'forum.tpl'
+	function renderForum(req, res, next) {
+		async.parallel({
+			header: function (next) {
+				res.locals.metaTags = [{
+					name: "title",
+					content: Meta.config.title || 'NodeBB'
+				}, {
+					name: "description",
+					content: Meta.config.description || ''
+				}, {
+					property: 'og:title',
+					content: 'Index | ' + (Meta.config.title || 'NodeBB')
+				}, {
+					property: 'og:type',
+					content: 'website'
+				}];
+
+				if (Meta.config['brand:logo']) {
+					res.locals.metaTags.push({
+						property: 'og:image',
+						content: Meta.config['brand:logo']
+					});
+				}
+
+				next(null);
+			},
+			categories: function (next) {
+				var uid = req.user ? req.user.uid : 0;
+				Categories.getCategoriesByPrivilege(uid, 'find', function (err, categoryData) {
+					if (err) {
+						return next(err);
+					}
+					var childCategories = [];
+
+					for (var i = categoryData.length - 1; i >= 0; --i) {
+
+						if (Array.isArray(categoryData[i].children) && categoryData[i].children.length) {
+							childCategories.push.apply(childCategories, categoryData[i].children);
+						}
+
+						if (categoryData[i].parent && categoryData[i].parent.cid) {
+							categoryData.splice(i, 1);
+						}
+					}
+
+					async.parallel([
+						function (next) {
+							Categories.getRecentTopicReplies(categoryData, uid, next);
+						},
+						function (next) {
+							Categories.getRecentTopicReplies(childCategories, uid, next);
+						}
+					], function (err) {
+						next(err, categoryData);
+					});
+				});
+			}
+		}, function (err, data) {
+			if (err) {
+				return next(err);
+			}
+			res.render('forum', data);
+		});
+	};
 
 	//////////////////////
 	// exports
@@ -614,15 +778,27 @@ var pkgjson = require('./package.json'),
 		});
 	}
 
-	protalmark.init = function (params, callback) {
-		params.router.get('/admin' + config.plugin.route, params.middleware.applyCSRF, params.middleware.admin.buildHeader, renderAdmin);
-		params.router.get('/api/admin' + config.plugin.route, params.middleware.applyCSRF, renderAdmin);
+	function setupPageRoute(router, name, middleware, middlewares, controller) {
+		middlewares = middlewares.concat([middleware.incrementPageViews, middleware.updateLastOnlineTime]);
 
+		router.get(name, middleware.buildHeader, middlewares, controller);
+		router.get('/api' + name, middlewares, controller);
+	}
+
+	protalmark.init = function (params, callback) {
+		params.router.get('/admin' + config.header.admin.route, params.middleware.admin.buildHeader, renderAdmin);
+		params.router.get('/api/admin' + config.header.admin.route, renderAdmin);
+		//for marked articles
+		setupPageRoute(params.router, config.header.portal.route, params.middleware, [middle.buildPortalBreadcrumbs], renderPortal);
+		setupPageRoute(params.router, config.header.article.route, params.middleware, [middle.buildArticleBreadcrumbs], renderArticle);
+		//TODO:replace default page route?
+		setupPageRoute(params.router, '/forum', params.middleware, [], renderForum);
+
+		//socket api
 		SocketPlugins[config.plugin.id] = clientHandlers;
 		SocketAdmin[config.plugin.id] = adminHandlers;
 
-		setupTranslations(params.app);
-
+		setupTranslations(params.router);
 		//setup needs groups to finish initialization
 		Groups.exists(config.group.name, function (err, exists) {
 			if (!exists) {
@@ -638,22 +814,27 @@ var pkgjson = require('./package.json'),
 		});
 	};
 
-	protalmark.addAdminNavigation = function (header, callback) {
-		header.plugins.push({
-			route: config.plugin.route,
-			icon: config.plugin.icon,
-			name: config.plugin.name
-		});
-
-		callback(null, header);
-	};
-
-
-
 	protalmark.filter = {};
+	protalmark.filter.header = {};
+	protalmark.filter.admin = {};
+	protalmark.filter.admin.header = {};
 	protalmark.filter.topic = {};
 	protalmark.filter.privileges = {};
 	protalmark.filter.privileges.topics = {};
+
+	//change page header
+	protalmark.filter.header.build = function (header, callback) {
+		header.navigation.push(config.header.portal);
+		header.forum = [{
+
+		}];
+		callback(null, header);
+	};
+
+	protalmark.filter.admin.header.build = function (header, callback) {
+		header.plugins.push(config.header.admin);
+		callback(null, header);
+	};
 
 	//check user's role and pass privileges
 	protalmark.filter.privileges.topics.get = function (privileges, callback) {
@@ -669,15 +850,7 @@ var pkgjson = require('./package.json'),
 	};
 	//set topic marks
 	protalmark.filter.topic.get = function (topicData, callback) {
-		// console.log(topicData);
-		// console.log(topicData.category)
-		// console.log(topicData.posts)
-		// console.log(topicData.portalmark)
-		// topicData.portalmark = true;
-		// topicData.marks = {
-		// 	name: "abcde",
-		// 	tag: "bcdef"
-		// };
+		//change or add topic data
 		callback(null, topicData);
 	}
 

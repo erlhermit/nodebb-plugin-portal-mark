@@ -1,4 +1,9 @@
 {
+	"title.plugin": "门户新闻系统",
+	"title.portal": "资讯",
+	"title.article": "新闻",
+	"title.forum": "论坛",
+	"title.forum_index": "版块",
 	"group.description": "用于发布新闻的群组",
 	"thread_tools.mark": "标记新闻",
 	"thread_tools.unmark": "移除新闻",

@@ -1,6 +1,6 @@
 <div class="marks tags">
   <div class="alert alert-warning">
-    <strong>Remember that only who was group by 'Master' can management portalmark at pront-end.</strong>
+    <strong>Remember that only who was group by 'Master' can management portalmark at front-end.</strong>
   </div>
   <!-- IF !marks.length -->
   <div class="alert alert-warning">
@@ -45,44 +45,46 @@
       </select>
     </div>
   </div>
-
-  <div class="col-lg-9">
-    <div class="panel panel-default mark-management tag-management">
-      <div class="panel-heading">Portal Mark Management</div>
-      <div class="panel-body">
-        <div class="row">
-          <!-- IMPORT portalmark/mark_list.tpl -->
+  <div class="container">
+    <ul class="nav col-lg-3 col-xs-12 pull-right">
+      <li class="panel panel-default ">
+        <div class="panel-heading">Marks CPanel</div>
+        <div class="panel-body">
+          <button class="btn btn-primary btn-md" id="new">New Mark</button>
+          <p></p>
+          <p>Select marks via clicking and/or dragging.</p>
+          <button class="btn btn-primary btn-md" id="modify">Modify Selected Marks</button>
+          <button class="btn btn-warning btn-md" id="deleteSelected">Delete Selected Marks</button>
         </div>
-      </div>
-    </div>
-    <div class="panel panel-default mark-topics">
-      <div class="panel-heading">Selected Mark Topics</div>
-      <div class="panel-body">
-        <div class="row">
+      </li>
+
+      <li class="panel panel-default">
+        <div class="panel-heading">Search Topics for Marks *COMING SOON</div>
+        <div class="panel-body">
+          <input class="form-control" type="text" id="mark-search" placeholder="Search..." />
+          <br/>
         </div>
-      </div>
-    </div>
-  </div>
+      </li>
+    </ul>
 
-  <div class="col-lg-3">
-    <div class="panel panel-default">
-      <div class="panel-heading">Marks CPanel</div>
-      <div class="panel-body">
-        <button class="btn btn-primary btn-md" id="new">New Mark</button>
-        <p></p>
-        <p>Select marks via clicking and/or dragging.</p>
-        <button class="btn btn-primary btn-md" id="modify">Modify Selected Marks</button>
-        <button class="btn btn-warning btn-md" id="deleteSelected">Delete Selected Marks</button>
-      </div>
-    </div>
 
-    <div class="panel panel-default">
-      <div class="panel-heading">Search Topics for Marks</div>
-      <div class="panel-body">
-        <input class="form-control" type="text" id="mark-search" placeholder="Search..." />
-        <br/>
-      </div>
-    </div>
+    <ul class="nav col-lg-9 col-xs-12 pull-left">
+      <li class="panel panel-default mark-management tag-management">
+        <div class="panel-heading">Portal Mark Management</div>
+        <div class="panel-body">
+          <div class="row">
+            <!-- IMPORT portalmark/mark_list.tpl -->
+          </div>
+        </div>
+      </li>
+      <li class="panel panel-default mark-topics">
+        <div class="panel-heading">Selected Mark Topics *COMING SOON</div>
+        <div class="panel-body">
+          <div class="row">
+          </div>
+        </div>
+      </li>
+    </ul>
   </div>
 
 </div>

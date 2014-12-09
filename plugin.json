@@ -28,8 +28,11 @@
 		"hook": "filter:topic.get",
 		"method": "filter.topic.get"
 	}, {
+		"hook": "filter:header.build",
+		"method": "filter.header.build"
+	}, {
 		"hook": "filter:admin.header.build",
-		"method": "addAdminNavigation"
+		"method": "filter.admin.header.build"
 	}],
 	"compatibility": "~0.5.0"
 }
