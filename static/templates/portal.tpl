@@ -50,6 +50,8 @@
     </ul>
     </div>
     <!-- ENDIF config.usePagination -->
+
+
     </div>
 
     <div widget-area="sidebar" class="col-md-3 col-xs-12 category-sidebar"></div>
