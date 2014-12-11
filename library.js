@@ -6,16 +6,20 @@ var pkgjson = require('./package.json'),
 	privileges = module.parent.require('./privileges'),
 	User = module.parent.require('./user'),
 	Groups = module.parent.require('./groups'),
+	S = module.parent.require('string'),
+	validator = module.parent.require('validator'),
 	Posts = module.parent.require('./posts'),
 	Topics = module.parent.require('./topics'),
 	Categories = module.parent.require('./categories'),
 	Meta = module.parent.require('./meta'),
 	db = module.parent.require('./database'),
 	async = module.parent.require('async'),
+	helpers = module.parent.require('./controllers/helpers'),
 	websockets = module.parent.require('./socket.io/index'),
 	SocketPlugins = module.parent.require('./socket.io/plugins'),
 	SocketAdmin = module.parent.require('./socket.io/admin').plugins,
 	translator = module.parent.require('../public/src/translator'),
+	plugins = module.parent.require('./plugins'),
 	utils = module.parent.require('../public/src/utils');
 // express removal of routes
 (function (protalmark) {
@@ -40,13 +44,15 @@ var pkgjson = require('./package.json'),
 				title: '[[portalmark:title.portal]]',
 				text: '[[portalmark:title.portal]]',
 				iconClass: 'fa-newspaper-o',
-				route: '/portal'
+				route: '/portals',
+				route_tag: '/portals/:tag'
 			},
 			article: {
 				title: '[[portalmark:title.article]]',
 				text: '[[portalmark:title.article]]',
 				iconClass: 'fa-rss',
-				route: '/article'
+				route: '/article',
+				route_tid_slug: '/article/:tid/:slug?'
 			},
 			forum: {
 				title: '[[portalmark:title.forum]]',
@@ -262,7 +268,6 @@ var pkgjson = require('./package.json'),
 			},
 			function (next) {
 				if (data.parent && (!oldData || oldData.parent != data.parent)) {
-					console.info('add to new parent ', data.parent);
 					db.setAdd(config.database.root + ':mark:' + data.parent + ":sub", markTag, next)
 				} else {
 					next();
@@ -335,11 +340,15 @@ var pkgjson = require('./package.json'),
 				});
 				if (sets.length) {
 					db.deleteAll(sets, function (err) {
-						next(err);
+						next(err, tids);
 					});
 				} else {
-					next();
+					next(null, tids);
 				}
+			},
+			//remove from genlist pendding
+			function (tids, next) {
+				adminCtl.removeFromGenerateTids(tids, next);
 			},
 			function (next) {
 				db.delete(config.database.root + ':mark:' + markTag + ':topics', next);
@@ -418,10 +427,18 @@ var pkgjson = require('./package.json'),
 				} else {
 					result.timestamp = utils.toISOString(result.timestamp);
 					adminCtl.getMarkTagWithParent(result.tag, function (err, tagData) {
-						result.tag = tagData;
-						result.parents = tagData.parents;
-						delete result.tag['parents'];
-						next(err, result);
+						if (tagData) {
+							result.tag = tagData;
+							result.parents = tagData.parents;
+							delete result.tag['parents'];
+							next(err, result);
+						} else {
+							adminCtl.removeFromGenerate(tid, function () {
+								db.delete(config.database.root + ':topic:' + tid, function () {
+									next(err, null);
+								});
+							});
+						}
 					});
 				}
 			},
@@ -499,7 +516,7 @@ var pkgjson = require('./package.json'),
 				adminCtl.getMarkTagWithScore(markTag, next);
 			},
 			function (tagData, next) {
-				if (tagData.parent) {
+				if (tagData && tagData.parent) {
 					adminCtl.getMarkTagWithParent(tagData.parent, function (err, parentData) {
 						if (!err) {
 							tagData.parents = parentData.parents.concat(parentData);
@@ -507,9 +524,11 @@ var pkgjson = require('./package.json'),
 						}
 						next(err, tagData)
 					});
-				} else {
+				} else if (tagData) {
 					tagData.parents = [];
 					next(null, tagData);
+				} else {
+					next(null, null);
 				}
 			}
 		], callback);
@@ -517,7 +536,7 @@ var pkgjson = require('./package.json'),
 	adminCtl.getMarkTag = function (markTag, callback) {
 		db.getObject(config.database.root + ':mark:' + markTag, function (err, tagData) {
 			if (!err) {
-				if (tagData.parent && tagData.parent == 'undefined') {
+				if (tagData && tagData.parent && tagData.parent == 'undefined') {
 					delete tagData['parent'];
 				}
 			}
@@ -531,7 +550,7 @@ var pkgjson = require('./package.json'),
 			},
 			function (tagData, next) {
 				adminCtl.getMarkCount(markTag, function (err, score) {
-					if (!err) {
+					if (!err && tagData) {
 						tagData.score = score;
 					}
 					next(err, tagData);
@@ -539,6 +558,9 @@ var pkgjson = require('./package.json'),
 			}
 		], callback);
 	};
+	adminCtl.getAllTopics = function (start, end, callback) {
+		db.getSortedSetRevRange(config.database.root + ':topics', start, end, callback);
+	}
 	adminCtl.getMarkTagTopics = function (markTag, start, end, callback) {
 		db.getSortedSetRevRange(config.database.root + ':mark:' + markTag + ':topics', start, end, callback);
 	};
@@ -585,17 +607,36 @@ var pkgjson = require('./package.json'),
 	//for server generate pages
 	//////////////////
 	adminCtl.pushToGenerate = function (tid, callback) {
-		db.sortedSetAdd(config.database.root + ':gen:pendding', tid, Date.now(), callback);
+		async.series([
+			function (next) {
+				db.sortedSetAdd(config.database.root + ':gen:pendding', Date.now(), tid, next);
+			},
+			function (next) {
+				db.sortedSetAdd(config.database.root + ':topics', Date.now(), tid, next);
+			}
+		], callback);
 	};
 	adminCtl.removeFromGenerate = function (tid, callback) {
-		db.sortedSetRemove(config.database.root + ':gen:pendding', tid, callback);
+		async.series([
+			function (next) {
+				db.sortedSetRemove(config.database.root + ':gen:pendding', tid, next);
+			},
+			function (next) {
+				db.sortedSetRemove(config.database.root + ':topics', tid, next);
+			}
+		], callback);
+	};
+	adminCtl.removeFromGenerateTids = function (tids, callback) {
+		async.each(tids, function (tid, next) {
+			adminCtl.removeFromGenerate(tid, next);
+		}, callback);
 	};
 	adminCtl.markGenerate = function (tid, callback) {
-		adminCtl.removeFromGenerate(tid, function (err) {
+		db.sortedSetRemove(config.database.root + ':gen:pendding', tid, function (err) {
 			if (err) {
 				return callback(err);
 			}
-			db.sortedSetAdd(config.database.root + ':gen:log', tid, Date.now(), callback);
+			db.sortedSetAdd(config.database.root + ':gen:log', Date.now(), tid, callback);
 		});
 	};
 	adminCtl.getGenerateList = function (start, end, callback) {
@@ -610,10 +651,18 @@ var pkgjson = require('./package.json'),
 	/////////////////
 	var middle = {};
 	middle.buildPortalBreadcrumbs = function (req, res, next) {
+		var tag = req.params.tag
 		var breadcrumbs = [{
 			text: '[[portalmark:title.portal]]',
 			url: nconf.get('relative_path') + config.header.portal.route
 		}];
+		if (!tag) {
+			breadcrumbs.push({
+				text: '[[portalmark:title.all]]'
+			});
+		} else {
+
+		}
 		res.locals.breadcrumbs = breadcrumbs || [];
 		next();
 	};
@@ -625,6 +674,11 @@ var pkgjson = require('./package.json'),
 		res.locals.breadcrumbs = breadcrumbs || [];
 		next();
 	};
+	middle.addArticleSlug = function (req, res, next) {
+		next();
+	};
+
+
 
 
 
@@ -640,47 +694,211 @@ var pkgjson = require('./package.json'),
 		adminCtl.getMarks(callback);
 	};
 
+	function renderHomepage(reg, res, next) {
+		res.render('homepage', {
+			page: 'hello'
+		});
+	}
 
 	function renderArticle(req, res, next) {
-		res.render(config.template.article, {});
+		var pageCount = 20;
+		var tag, tid = req.params.tid,
+			slug = req.params.slug,
+			page = req.query.page || 1,
+			uid = req.user ? req.user.uid : 0,
+			userPrivileges;
+		async.waterfall([
+				function (next) {
+					adminCtl.getTopicMark(tid, next);
+				},
+				function (result, next) {
+					if (result) {
+						Topics.getTopicFields(tid, ['tid', 'slug', 'uid', 'title', 'mainPid'], function (err, article) {
+							if (article.slug != tid + '/' + slug) {
+								return helpers.notFound(req, res);
+							}
+							result.article = article;
+							next(err, result);
+						});
+					} else {
+						return helpers.notFound(req, res);
+					}
+				},
+				function (result, next) {
+					if (result) {
+						db.getObjectField('post:' + result.article.mainPid, 'content', function (err, data) {
+							if (!err) {
+								result.article.content = data;
+							}
+							next(null, result);
+						});
+					} else {
+						return helpers.notFound(req, res);
+					}
+				},
+				function (result, next) {
+					plugins.fireHook('filter:parse.post', {
+						postData: {
+							content: result.article.content
+						},
+						uid: -1
+					}, function (err, data) {
+						result.article.content = data ? data.postData.content : null;
+						next(err, result);
+					});
+				},
+				function (result, next) {
+					var description = '';
+
+					if (result.article && result.article.content) {
+						description = S(result.article.content).stripTags().decodeHTMLEntities().s;
+					}
+
+					if (description.length > 255) {
+						description = description.substr(0, 255) + '...';
+					}
+
+					description = validator.escape(description);
+					description = description.replace(/&apos;/g, '&#x27;');
+
+					result.article.description = description;
+
+					var ogImageUrl = Meta.config['brand:logo'];
+					// if (topicData.thumb) {
+					// 	ogImageUrl = topicData.thumb;
+					// } else if(topicData.posts.length && topicData.posts[0] && topicData.posts[0].user && topicData.posts[0].user.picture){
+					// 	ogImageUrl = topicData.posts[0].user.picture;
+					// } else if(meta.config['brand:logo']) {
+					// 	ogImageUrl = meta.config['brand:logo'];
+					// } else {
+					// 	ogImageUrl = '/logo.png';
+					// }
+					//
+					// if (ogImageUrl.indexOf('http') === -1) {
+					// 	ogImageUrl = nconf.get('url') + ogImageUrl;
+					// }
+
+					res.locals.metaTags = [{
+						name: "title",
+						content: result.article.title
+					}, {
+						name: "description",
+						content: description
+					}, {
+						property: 'og:title',
+						content: result.article.title.replace(/&amp;/g, '&')
+					}, {
+						property: 'og:description',
+						content: description
+					}, {
+						property: "og:type",
+						content: 'article'
+					}, {
+						property: "og:url",
+						content: nconf.get('url') + config.header.article.route + '/' + result.article.tid + '/' + result.article.title
+					}, {
+						property: 'og:image',
+						content: ogImageUrl
+					}, {
+						property: "og:image:url",
+						content: ogImageUrl
+					}, {
+						property: "article:published_time",
+						content: result.timestamp
+					}, {
+						property: 'article:modified_time',
+						content: result.timestamp
+					}, {
+						property: 'article:section',
+						content: result.tag ? result.tag.name : ''
+					}];
+
+					res.locals.linkTags = [{
+						rel: 'alternate',
+						type: 'application/rss+xml',
+						href: nconf.get('url') + +config.header.article.route + '/' + result.article.tid + '.rss'
+					}, {
+						rel: 'canonical',
+						href: nconf.get('url') + config.header.article.route + '/' + result.article.tid + '/' + result.article.title
+					}, {
+						rel: 'up',
+						href: nconf.get('url') + config.header.portal.route + '/' + result.tag.tag
+					}];
+
+					result['feeds:disableRSS'] = parseInt(Meta.config['feeds:disableRSS'], 10) === 1;
+					result.article.index = 0;
+					next(null, result);
+				}
+			],
+			function (err, data) {
+				if (err) {
+					return next(err);
+				}
+				data.breadcrumbs = res.locals.breadcrumbs
+				res.render(config.template.article, data);
+			});
 	}
 
 	function renderPortal(req, res, next) {
-		async.parallel({
-			header: function (next) {
-				res.locals.metaTags = [{
-					name: "title",
-					content: '[[portalmark:title.portal]] | ' + (Meta.config.title || 'NodeBB')
-				}, {
-					name: "description",
-					content: Meta.config.description || ''
-				}, {
-					property: 'og:title',
-					content: '[[portalmark:title.portal]] | ' + 'Index | ' + (Meta.config.title || 'NodeBB')
-				}, {
-					property: 'og:type',
-					content: 'website'
-				}];
-
-				if (Meta.config['brand:logo']) {
-					res.locals.metaTags.push({
-						property: 'og:image',
-						content: Meta.config['brand:logo']
+		var pageCount = 20;
+		var tag = req.params.tag,
+			page = req.query.page || 1,
+			uid = req.user ? req.user.uid : 0,
+			userPrivileges;
+		async.waterfall([
+				function (next) {
+					adminCtl.getMarkTagWithParent(tag, next);
+				},
+				function (results, next) {
+					if (results) {
+						//show tag list
+						adminCtl.getMarkTagTopics(results.tag, 0, -1, function (err, tids) {
+							next(err, results, tids);
+						});
+					} else {
+						//show general list
+						adminCtl.getAllTopics(0, -1, function (err, tids) {
+							next(null, {}, tids);
+						});
+					}
+				},
+				function (results, tids, next) {
+					Topics.getTopicsFields(tids, ['tid', 'uid', 'slug', 'title', 'mainPid'], function (err, articles) {
+						results.articles = articles;
+						next(err, results);
 					});
-				}
+				},
+				function (results, next) {
+					res.locals.metaTags = [{
+						name: "title",
+						content: '[[portalmark:title.portal]] | ' + (Meta.config.title || 'NodeBB')
+					}, {
+						name: "description",
+						content: Meta.config.description || ''
+					}, {
+						property: 'og:title',
+						content: '[[portalmark:title.portal]] | ' + '[[portalmark:title.index]] | ' + (Meta.config.title || 'NodeBB')
+					}, {
+						property: 'og:type',
+						content: 'website'
+					}];
 
-				next(null);
-			},
-			marks: function (next) {
-				routeCtl.getMarks(next);
-			}
-		}, function (err, data) {
-			if (err) {
-				return next(err);
-			}
-			data.breadcrumbs = res.locals.breadcrumbs
-			res.render(config.template.portal, data);
-		});
+					if (Meta.config['brand:logo']) {
+						res.locals.metaTags.push({
+							property: 'og:image',
+							content: Meta.config['brand:logo']
+						});
+					}
+					next(null, results);
+				}
+			],
+			function (err, data) {
+				if (err) {
+					return next(err);
+				}
+				data.breadcrumbs = res.locals.breadcrumbs
+				res.render(config.template.portal, data);
+			});
 	}
 
 	//copy from controllers.home change use template 'forum.tpl'
@@ -790,8 +1008,10 @@ var pkgjson = require('./package.json'),
 		params.router.get('/api/admin' + config.header.admin.route, renderAdmin);
 		//for marked articles
 		setupPageRoute(params.router, config.header.portal.route, params.middleware, [middle.buildPortalBreadcrumbs], renderPortal);
-		setupPageRoute(params.router, config.header.article.route, params.middleware, [middle.buildArticleBreadcrumbs], renderArticle);
+		setupPageRoute(params.router, config.header.portal.route_tag, params.middleware, [middle.buildPortalBreadcrumbs], renderPortal);
+		setupPageRoute(params.router, config.header.article.route_tid_slug, params.middleware, [middle.buildArticleBreadcrumbs, middle.addArticleSlug], renderArticle);
 		//TODO:replace default page route?
+		setupPageRoute(params.router, '/', params.middleware, [], renderHomepage);
 		setupPageRoute(params.router, '/forum', params.middleware, [], renderForum);
 
 		//socket api
@@ -825,9 +1045,6 @@ var pkgjson = require('./package.json'),
 	//change page header
 	protalmark.filter.header.build = function (header, callback) {
 		header.navigation.push(config.header.portal);
-		header.forum = [{
-
-		}];
 		callback(null, header);
 	};
 
@@ -851,6 +1068,7 @@ var pkgjson = require('./package.json'),
 	//set topic marks
 	protalmark.filter.topic.get = function (topicData, callback) {
 		//change or add topic data
+		// console.log('topic:', topicData)
 		callback(null, topicData);
 	}
 

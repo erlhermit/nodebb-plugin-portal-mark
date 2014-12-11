@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <title>{browserTitle}</title>
   <!-- BEGIN metaTags -->
@@ -8,47 +7,38 @@
   <!-- END metaTags -->
   <link rel="stylesheet" type="text/css" href="{relative_path}/stylesheet.css?{css-buster}" />
   <!-- BEGIN linkTags -->
-  <link<!-- IF linkTags.link --> link="{linkTags.link}"
-    <!-- ENDIF linkTags.link -->
-    <!-- IF linkTags.rel -->rel="{linkTags.rel}"
-    <!-- ENDIF linkTags.rel -->
-    <!-- IF linkTags.type -->type="{linkTags.type}"
-    <!-- ENDIF linkTags.type -->
-    <!-- IF linkTags.href -->href="{linkTags.href}"
-    <!-- ENDIF linkTags.href -->/>
-    <!-- END linkTags -->
+  <link<!-- IF linkTags.link --> link="{linkTags.link}"<!-- ENDIF linkTags.link --><!-- IF linkTags.rel --> rel="{linkTags.rel}"<!-- ENDIF linkTags.rel --><!-- IF linkTags.type --> type="{linkTags.type}"<!-- ENDIF linkTags.type --><!-- IF linkTags.href --> href="{linkTags.href}"<!-- ENDIF linkTags.href --> />
+  <!-- END linkTags -->
 
-    <!--[if lt IE 9]>
-  		<script src="//cdnjs.cloudflare.com/ajax/libs/es5-shim/2.3.0/es5-shim.min.js"></script>
-  		<script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.js"></script>
-  		<script src="//cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.js"></script>
-  		<script>__lt_ie_9__ = 1;</script>
-	<![endif]-->
+  <!--[if lt IE 9]>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/es5-shim/2.3.0/es5-shim.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.js"></script>
+  <script>__lt_ie_9__ = 1;</script>
+  <![endif]-->
 
-    <script>
-      var RELATIVE_PATH = "{relative_path}";
-    </script>
-    <script src="{relative_path}/nodebb.min.js?{script-buster}"></script>
-    <script>
-      require.config({
-        baseUrl: "{relative_path}/src/modules",
-        waitSeconds: 3,
-        urlArgs: "{cache-buster}",
-        paths: {
-          'forum': '../forum',
-          'vendor': '../../vendor'
-        }
-      });
-    </script>
+  <script>
+  var RELATIVE_PATH = "{relative_path}";
+  </script>
+  <script src="{relative_path}/nodebb.min.js?{script-buster}"></script>
+  <script>
+  require.config({
+    baseUrl: "{relative_path}/src/modules",
+    waitSeconds: 3,
+    urlArgs: "{cache-buster}",
+    paths: {
+      'forum': '../forum',
+      'vendor': '../../vendor'
+    }
+  });
+  </script>
 
-    <!-- IF useCustomJS -->
-    {customJS}
-    <!-- ENDIF useCustomJS -->
-    <!-- IF useCustomCSS -->
-    <style type="text/css">
-      {customCSS}
-    </style>
-    <!-- ENDIF useCustomCSS -->
+  <!-- IF useCustomJS -->
+  {customJS}
+  <!-- ENDIF useCustomJS -->
+  <!-- IF useCustomCSS -->
+  <style type="text/css">{customCSS}</style>
+  <!-- ENDIF useCustomCSS -->
 
 </head>
 
@@ -81,6 +71,7 @@
       <div class="navbar-collapse collapse navbar-ex1-collapse">
         <!-- IF !maintenanceHeader -->
         <ul id="main-nav" class="nav navbar-nav pull-left">
+
           <!-- IF searchEnabled -->
           <li class="visible-xs">
             <a href="{relative_path}/search" title="[[global:header.search]]" id="mobile-search-button">
@@ -112,6 +103,7 @@
               <i class="fa fa-fw fa-comments"></i> <span class="visible-xs-inline">[[portalmark:title.forum]]</span>
             </button>
 
+
             <ul id="forum-view-list" class="dropdown-menu" aria-labelledby="forum_dropdown">
               <li>
                 <a href="{relative_path}/forum" title="[[portalmark:title.forum_index]]">
@@ -119,15 +111,13 @@
                 </a>
               </li>
               <li role="presentation" class="divider"></li>
-
               <!-- IF loggedIn -->
               <li>
                 <a href="{relative_path}/unread" title="[[global:header.unread]]">
-                  <i id="unread-count" class="fa fa-fw fa-inbox" data-content="0"></i><span> [[global:header.unread]]</span>
+                  <i id="unread-count" class="fa fa-fw fa-inbox" data-content="0" ></i><span> [[global:header.unread]]</span>
                 </a>
               </li>
               <!-- ENDIF loggedIn -->
-
               <li>
                 <a href="{relative_path}/recent" title="[[global:header.recent]]">
                   <i class="fa fa-fw fa-clock-o"></i><span> [[global:header.recent]]</span>
@@ -150,22 +140,19 @@
                 </a>
                 <!-- ENDIF function.displayUsersLink -->
               </li>
-
             </ul>
-          </li>
-        </ul>
+            <!--dropdown end-->
+          </ul>
 
-        <!-- IF loggedIn -->
-        <ul id="logged-in-menu" class="nav navbar-nav navbar-right pull-right">
-
-          <!-- IF isAdmin -->
-          <li>
-            <a href="{relative_path}/admin" title="[[global:header.admin]]" target="_top">
-              <i class="fa fa-fw fa-cogs"></i><span class="visible-xs-inline"> [[global:header.admin]]</span>
-            </a>
-          </li>
-          <!-- ENDIF isAdmin -->
-
+          <!-- IF loggedIn -->
+          <ul id="logged-in-menu" class="nav navbar-nav navbar-right pull-right">
+            <!-- IF isAdmin -->
+            <li>
+              <a href="{relative_path}/admin" title="[[global:header.admin]]" target="_top">
+                <i class="fa fa-fw fa-cogs"></i><span class="visible-xs-inline"> [[global:header.admin]]</span>
+              </a>
+            </li>
+            <!-- ENDIF isAdmin -->
           <li class="notifications dropdown text-center hidden-xs">
             <a href="#" title="[[global:header.notifications]]" class="dropdown-toggle" data-toggle="dropdown" id="notif_dropdown">
               <i class="notification-icon fa fa-fw fa-bell-o" data-content="0"></i>
@@ -198,7 +185,7 @@
 
           <li id="user_label" class="dropdown">
             <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="user_dropdown" title="[[global:header.profile]]">
-              <img id="user-header-picture" src="{user.picture}" />
+              <img id="user-header-picture" src="{user.picture}"/>
             </a>
             <ul id="user-control-list" class="dropdown-menu" aria-labelledby="user_dropdown">
               <li>
@@ -262,8 +249,7 @@
                 </div>
                 <button type="submit" class="btn btn-default hide">[[global:search]]</button>
               </div>
-              <button id="search-button" type="button" class="btn btn-link"><i class="fa fa-search fa-fw" title="[[global:header.search]]"></i>
-              </button>
+              <button id="search-button" type="button" class="btn btn-link"><i class="fa fa-search fa-fw" title="[[global:header.search]]"></i></button>
             </form>
           </li>
         </ul>
