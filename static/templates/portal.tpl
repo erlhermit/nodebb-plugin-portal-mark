@@ -1,9 +1,3 @@
-<input type="hidden" template-variable="category_id" value="{cid}" />
-<input type="hidden" template-variable="category_name" value="{name}" />
-<input type="hidden" template-variable="topic_count" value="{topic_count}" />
-<input type="hidden" template-variable="currentPage" value="{currentPage}" />
-<input type="hidden" template-variable="pageCount" value="{pageCount}" />
-
 <ol class="breadcrumb">
   <!-- BEGIN breadcrumbs -->
   <li itemscope="itemscope" itemtype="http://data-vocabulary.org/Breadcrumb">
@@ -24,11 +18,13 @@
 </ol>
 
 <div class="category row">
-  <div class="{topic_row_size}" no-widget-class="col-lg-12 col-sm-12" no-widget-target="sidebar">
-    <div class="header category-tools clearfix">
+  <div class="col-lg-9 col-xs-12" no-widget-class="col-lg-12 col-sm-12" no-widget-target="sidebar">
+    <!-- IF !articles.length -->
+    <div class="alert alert-warning" id="category-no-topics">
+      [[category:no_topics]]
     </div>
-
-    <ul id="topics-container" itemscope itemtype="http://www.schema.org/ItemList" data-nextstart="{nextStart}">
+    <!-- ENDIF !articles.length -->
+    <ul id="topics-container" itemscope itemtype="http://www.schema.org/ItemList" data-nextstart="0">
       <meta itemprop="itemListOrder" content="descending">
       <!-- BEGIN articles -->
       <li class="category-item" itemprop="itemListElement" data-tid="{articles.tid}" data-index="{articles.index}">

@@ -45,7 +45,7 @@ var pkgjson = require('./package.json'),
 				text: '[[portalmark:title.portal]]',
 				iconClass: 'fa-newspaper-o',
 				route: '/portals',
-				route_tag: '/portals/:tag'
+				route_tag: '/portals/:tag?'
 			},
 			article: {
 				title: '[[portalmark:title.article]]',
@@ -795,7 +795,7 @@ var pkgjson = require('./package.json'),
 						content: 'article'
 					}, {
 						property: "og:url",
-						content: nconf.get('url') + config.header.article.route + '/' + result.article.tid + '/' + result.article.title
+						content: nconf.get('url') + config.header.article.route + '/' + result.article.slug
 					}, {
 						property: 'og:image',
 						content: ogImageUrl
@@ -819,7 +819,7 @@ var pkgjson = require('./package.json'),
 						href: nconf.get('url') + +config.header.article.route + '/' + result.article.tid + '.rss'
 					}, {
 						rel: 'canonical',
-						href: nconf.get('url') + config.header.article.route + '/' + result.article.tid + '/' + result.article.title
+						href: nconf.get('url') + config.header.article.route + '/' + result.article.slug
 					}, {
 						rel: 'up',
 						href: nconf.get('url') + config.header.portal.route + '/' + result.tag.tag
@@ -835,6 +835,7 @@ var pkgjson = require('./package.json'),
 					return next(err);
 				}
 				data.breadcrumbs = res.locals.breadcrumbs
+				data.sns_comment_id = config.header.article.route + '/' + data.article.slug
 				res.render(config.template.article, data);
 			});
 	}
@@ -1007,7 +1008,6 @@ var pkgjson = require('./package.json'),
 		params.router.get('/admin' + config.header.admin.route, params.middleware.admin.buildHeader, renderAdmin);
 		params.router.get('/api/admin' + config.header.admin.route, renderAdmin);
 		//for marked articles
-		setupPageRoute(params.router, config.header.portal.route, params.middleware, [middle.buildPortalBreadcrumbs], renderPortal);
 		setupPageRoute(params.router, config.header.portal.route_tag, params.middleware, [middle.buildPortalBreadcrumbs], renderPortal);
 		setupPageRoute(params.router, config.header.article.route_tid_slug, params.middleware, [middle.buildArticleBreadcrumbs, middle.addArticleSlug], renderArticle);
 		//TODO:replace default page route?

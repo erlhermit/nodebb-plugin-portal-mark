@@ -64,6 +64,9 @@
     </ul>
   </div>
   <!-- ENDIF config.usePagination -->
+
+  <!-- IMPORT portalmark/sns_comment.tpl -->
+
   </div>
   <script>
     $(window).on('action:ajaxify.end', function(event, data) {
