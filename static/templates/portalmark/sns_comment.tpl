@@ -11,6 +11,6 @@
     s.charset = 'utf-8';
     s.src = 'http://assets.changyan.sohu.com/upload/changyan.js?conf=' + conf + '&appid=' + appid;
     h.insertBefore(s, h.firstChild);
-    window.SCS_NO_IFRAME = true;
+    window.SCS_NO_IFRAME = false;
   })()
 </script>

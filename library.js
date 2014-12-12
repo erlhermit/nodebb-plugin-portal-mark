@@ -26,7 +26,7 @@ var pkgjson = require('./package.json'),
 	var config = {
 		lang: "zh_CN",
 		group: {
-			name: "Marker",
+			name: "marker",
 			description: "[[portalmark:group.description]]",
 		},
 		plugin: {
@@ -38,12 +38,14 @@ var pkgjson = require('./package.json'),
 		header: {
 			admin: {
 				name: 'Portal Mark',
+				class: '',
 				route: '/plugins/portalmark'
 			},
 			portal: {
 				title: '[[portalmark:title.portal]]',
 				text: '[[portalmark:title.portal]]',
 				iconClass: 'fa-newspaper-o',
+				class: '',
 				route: '/portals',
 				route_tag: '/portals/:tag?'
 			},
@@ -51,6 +53,7 @@ var pkgjson = require('./package.json'),
 				title: '[[portalmark:title.article]]',
 				text: '[[portalmark:title.article]]',
 				iconClass: 'fa-rss',
+				class: '',
 				route: '/article',
 				route_tid_slug: '/article/:tid/:slug?'
 			},
@@ -58,13 +61,14 @@ var pkgjson = require('./package.json'),
 				title: '[[portalmark:title.forum]]',
 				text: '[[portalmark:title.forum]]',
 				iconClass: 'fa-comments',
+				class: '',
 				route: '/forum'
 			}
 		},
 		template: {
 			admin: 'admin/plugins/portalmark',
 			article: 'article',
-			portal: 'portal'
+			portal: 'portals'
 		},
 		database: {
 			root: pluginjson.id,
@@ -416,17 +420,20 @@ var pkgjson = require('./package.json'),
 			], callback);
 		});
 	};
+	adminCtl.getTopic = function (tid, callback) {
+		db.getObject(config.database.root + ':topic:' + tid, callback);
+	}
 	adminCtl.getTopicMark = function (tid, callback) {
 		async.waterfall([
 			function (next) {
-				db.getObject(config.database.root + ':topic:' + tid, next);
+				adminCtl.getTopic(tid, next);
 			},
 			function (result, next) {
 				if (!result) {
 					next(null, null);
 				} else {
 					result.timestamp = utils.toISOString(result.timestamp);
-					adminCtl.getMarkTagWithParent(result.tag, function (err, tagData) {
+					adminCtl.getMarkTagWithParents(result.tag, function (err, tagData) {
 						if (tagData) {
 							result.tag = tagData;
 							result.parents = tagData.parents;
@@ -510,25 +517,51 @@ var pkgjson = require('./package.json'),
 				callback(err, exists);
 			});
 	};
-	adminCtl.getMarkTagWithParent = function (markTag, callback) {
+
+	adminCtl.getMarkTagSubWithParentSub = function (markTag, callback) {
+		async.waterfall([
+			function (next) {
+				adminCtl.getMarkTagWithScore(markTag, next);
+			},
+			function (tagData, next) {
+				if (!tagData) {
+					return callback(null, null);
+				} else if (tagData.parent) {
+					adminCtl.getMarkTagSubFields(tagData.parent, function (err, subs) {
+						tagData.tags = subs;
+						next(err, tagData);
+					});
+				} else {
+					next(null, tagData);
+				}
+			},
+			function (tagData, next) {
+				adminCtl.getMarkTagSubFields(markTag, function (err, subs) {
+					tagData.subs = subs;
+					next(err, tagData);
+				});
+			}
+		], callback);
+	};
+	adminCtl.getMarkTagWithParents = function (markTag, callback) {
 		async.waterfall([
 			function (next) {
 				adminCtl.getMarkTagWithScore(markTag, next);
 			},
 			function (tagData, next) {
 				if (tagData && tagData.parent) {
-					adminCtl.getMarkTagWithParent(tagData.parent, function (err, parentData) {
+					adminCtl.getMarkTagWithParents(tagData.parent, function (err, parentData) {
 						if (!err) {
 							tagData.parents = parentData.parents.concat(parentData);
 							delete parentData['parents'];
 						}
 						next(err, tagData)
 					});
-				} else if (tagData) {
-					tagData.parents = [];
-					next(null, tagData);
 				} else {
-					next(null, null);
+					if (tagData) {
+						tagData.parents = [];
+					}
+					next(null, tagData);
 				}
 			}
 		], callback);
@@ -569,6 +602,20 @@ var pkgjson = require('./package.json'),
 	};
 	adminCtl.getMarkTagSub = function (markTag, callback) {
 		db.getSetMembers(config.database.root + ':mark:' + markTag + ":sub", callback);
+	};
+	adminCtl.getMarkTagSubFields = function (markTag, callback) {
+		adminCtl.getMarkTagSub(markTag, function (err, sets) {
+			var keys = sets.map(function (tag) {
+				return config.database.root + ':mark:' + tag;
+			});
+			if (keys && keys.length) {
+				db.getObjects(keys, function (err, subs) {
+					callback(err, subs);
+				});
+			} else {
+				callback(null, []);
+			}
+		});
 	};
 	adminCtl.getMarksFields = function (markTags, callback) {
 		var keys = markTags.map(function (tag) {
@@ -656,23 +703,83 @@ var pkgjson = require('./package.json'),
 			text: '[[portalmark:title.portal]]',
 			url: nconf.get('relative_path') + config.header.portal.route
 		}];
-		if (!tag) {
-			breadcrumbs.push({
-				text: '[[portalmark:title.all]]'
-			});
-		} else {
+		async.waterfall([
+			function (next) {
+				if (!tag) {
+					breadcrumbs.push({
+						text: '[[portalmark:title.all]]'
+					});
+					next(null, null);
+				} else {
+					adminCtl.getMarkTagWithParents(tag, next);
+				}
+			},
+			function (result, next) {
+				if (result) {
+					var arr = result.parents.concat([{
+						name: result.name,
+						tag: result.tag,
+						score: result.score
+					}]);
+					for (var i = 0; i < arr.length; i++) {
+						var set = arr[i];
+						breadcrumbs.push({
+							text: set.name,
+							url: nconf.get('relative_path') + config.header.portal.route + '/' + set.tag,
+							score: set.score
+						});
+					}
 
-		}
-		res.locals.breadcrumbs = breadcrumbs || [];
-		next();
+				}
+				res.locals.breadcrumbs = breadcrumbs || [];
+				next();
+			}
+		], next);
 	};
 	middle.buildArticleBreadcrumbs = function (req, res, next) {
+		var tid = req.params.tid
+		var slug = req.params.slug
 		var breadcrumbs = [{
-			text: '[[portalmark:title.article]]',
-			url: nconf.get('relative_path') + config.header.article.route
+			text: '[[portalmark:title.portal]]',
+			url: nconf.get('relative_path') + config.header.portal.route
 		}];
-		res.locals.breadcrumbs = breadcrumbs || [];
-		next();
+		async.waterfall([
+			function (next) {
+				adminCtl.getTopic(tid, function (err, result) {
+					next(null, result ? result.tag : null);
+				});
+			},
+			function (tag, next) {
+				if (!tag) {
+					breadcrumbs.push({
+						text: '[[portalmark:title.all]]'
+					});
+					next(null, null);
+				} else {
+					adminCtl.getMarkTagWithParents(tag, next);
+				}
+			},
+			function (result, next) {
+				if (result) {
+					var arr = result.parents.concat([{
+						name: result.name,
+						tag: result.tag,
+						score: result.score
+					}]);
+					for (var i = 0; i < arr.length; i++) {
+						var set = arr[i];
+						breadcrumbs.push({
+							text: set.name,
+							url: nconf.get('relative_path') + config.header.portal.route + '/' + set.tag,
+							score: set.score
+						});
+					}
+
+				}
+				res.locals.breadcrumbs = breadcrumbs || [];
+				next();
+			}
+		], next);
 	};
 	middle.addArticleSlug = function (req, res, next) {
 		next();
@@ -848,7 +955,7 @@ var pkgjson = require('./package.json'),
 			userPrivileges;
 		async.waterfall([
 				function (next) {
-					adminCtl.getMarkTagWithParent(tag, next);
+					adminCtl.getMarkTagSubWithParentSub(tag, next);
 				},
 				function (results, next) {
 					if (results) {
@@ -857,14 +964,21 @@ var pkgjson = require('./package.json'),
 							next(err, results, tids);
 						});
 					} else {
-						//show general list
-						adminCtl.getAllTopics(0, -1, function (err, tids) {
-							next(null, {}, tids);
+						adminCtl.getMarks(function (err, marks) {
+							//show general list
+							adminCtl.getAllTopics(0, -1, function (err, tids) {
+								next(null, {
+									subs: marks
+								}, tids);
+							});
 						});
 					}
 				},
 				function (results, tids, next) {
 					Topics.getTopicsFields(tids, ['tid', 'uid', 'slug', 'title', 'mainPid'], function (err, articles) {
+						for (var i = 0; i < articles.length; i++) {
+							articles[i].index = i;
+						}
 						results.articles = articles;
 						next(err, results);
 					});
@@ -898,6 +1012,8 @@ var pkgjson = require('./package.json'),
 					return next(err);
 				}
 				data.breadcrumbs = res.locals.breadcrumbs
+				data.article_count = 100;
+				console.log(data)
 				res.render(config.template.portal, data);
 			});
 	}
@@ -1012,6 +1128,7 @@ var pkgjson = require('./package.json'),
 		setupPageRoute(params.router, config.header.article.route_tid_slug, params.middleware, [middle.buildArticleBreadcrumbs, middle.addArticleSlug], renderArticle);
 		//TODO:replace default page route?
 		setupPageRoute(params.router, '/', params.middleware, [], renderHomepage);
+		setupPageRoute(params.router, '/home', params.middleware, [], renderForum);
 		setupPageRoute(params.router, '/forum', params.middleware, [], renderForum);
 
 		//socket api

@@ -1,5 +1,22 @@
 "use strict";
-$(window).on('action:ajaxify.end', function (event, data) {});
+$(window).on('action:ajaxify.start', function (ev, data) {
+	if (data && data.url.indexOf('article') == 0) {
+		// require(['cms/article'], function start(article) {
+		// 	article.init();
+		// });
+	}
+	if (data && data.url.indexOf('portals') == 0) {
+		// require(['cms/portals'], function start(portals) {
+		// 	portals.init();
+		// });
+	}
+});
+//
+// $(window).on('action:ajaxify.end', function (event, data) {
+// 	if (data && data.url.indexOf('article') == 0) {
+// 		$('html head').find('title').text($('meta[property="og:title"]').attr('content'));
+// 	}
+// });
 //hook topic button action
 $(window).on('action:topic.loaded', function (e, data) {
 	var socketId = 'nodebb-plugin-portal-mark';

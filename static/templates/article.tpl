@@ -1,3 +1,9 @@
+<input type="hidden" template-variable="article_id" value="{article.tid}" />
+<input type="hidden" template-variable="article_slug" value="{article.slug}" />
+<input type="hidden" template-variable="article_name" value="{article.title}" />
+<input type="hidden" template-variable="portal_tag" value="{tag.tag}" />
+
+
 <div class="topic">
   <ol class="breadcrumb">
     <!-- BEGIN breadcrumbs -->
@@ -5,22 +11,17 @@
       <!-- IF !@last -->
       <a href="{breadcrumbs.url}" itemprop="url">
         <!-- ENDIF !@last -->
-        <span itemprop="title">
-        {breadcrumbs.text}
-        <!-- IF @last -->
-        <!-- IF !feeds:disableRSS --><a target="_blank" href="{relative_path}/article/{article.tid}.rss"><i class="fa fa-rss-square"></i></a><!-- ENDIF !feeds:disableRSS -->
-        <!-- ENDIF @last -->
-      </span>
+        <span itemprop="title">{breadcrumbs.text}</span>
         <!-- IF !@last -->
+        <!-- IF breadcrumbs.score -->
+        <span class="badge">{breadcrumbs.score}</span>
+        <!-- ENDIF breadcrumbs.score -->
       </a>
       <!-- ENDIF !@last -->
     </li>
     <!-- END breadcrumbs -->
     <div class="pull-right">
       <!-- IMPORT portalmark/share.tpl -->
-    </div>
-    <div class="loading-indicator pull-right" done="0" style="display:none;">
-      <i class="fa fa-refresh fa-spin"></i>
     </div>
   </ol>
 
@@ -65,14 +66,9 @@
   </div>
   <!-- ENDIF config.usePagination -->
 
-  <!-- IMPORT portalmark/sns_comment.tpl -->
+  <!---- IMPORT portalmark/sns_comment.tpl ---->
 
   </div>
-  <script>
-    $(window).on('action:ajaxify.end', function(event, data) {
-      $('html head').find('title').text($('meta[property="og:title"]').attr('content'));
-    });
-  </script>
   <noscript>
     <div class="text-center">
       <ul class="pagination">
