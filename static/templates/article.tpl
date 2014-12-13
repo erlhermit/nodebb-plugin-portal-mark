@@ -8,26 +8,18 @@
   <ol class="breadcrumb">
     <!-- BEGIN breadcrumbs -->
     <li itemscope="itemscope" itemtype="http://data-vocabulary.org/Breadcrumb">
-      <!-- IF !@last -->
       <a href="{breadcrumbs.url}" itemprop="url">
-        <!-- ENDIF !@last -->
         <span itemprop="title">{breadcrumbs.text}</span>
-        <!-- IF !@last -->
         <!-- IF breadcrumbs.score -->
         <span class="badge">{breadcrumbs.score}</span>
         <!-- ENDIF breadcrumbs.score -->
       </a>
-      <!-- ENDIF !@last -->
     </li>
     <!-- END breadcrumbs -->
-    <div class="pull-right">
-      <!-- IMPORT portalmark/share.tpl -->
-    </div>
   </ol>
 
   <ul id="post-container" class="posts" data-tid="{tid}">
-    <li class="post-row" data-pid="{article.pid}" data-uid="{article.uid}" data-username="{article.user.username}" data-userslug="{article.user.userslug}" data-index="{article.index}" data-timestamp="{article.timestamp}" data-votes="{article.votes}" itemscope
-    itemtype="http://schema.org/Comment">
+    <li class="post-row" data-pid="{article.pid}" data-uid="{author.uid}" data-username="{author.username}" data-userslug="{author.userslug}" data-index="{article.index}" data-timestamp="{timestamp}" itemscope itemtype="http://schema.org/Comment">
       <meta itemprop="datePublished" content="{article.relativeTime}">
       <meta itemprop="dateModified" content="{article.relativeEditTime}">
 
@@ -38,8 +30,13 @@
               <div class="topic-text">
                 <h3 class="topic-title">
                   <p id="topic_title_{article.mainPid}" class="topic-title text-center" itemprop="name">{article.title}</p>
-                  <hr>
                 </h3>
+                <div class="text-center">
+                  <h6> <span>发布者: {marker.username}</span>  |  原作者: {author.username} | 查看:<span id="article-views" class=""></span> | 发表于<span class="timeago" title="{timestamp}"></span> </h6>
+                </div>
+                <div class="well well-sm">
+                  <h6><strong>摘要: </strong> <small>{article.description}</small></h6>
+                </div>
                 <div id="content_{article.mainPid}" class="post-content" itemprop="text">
                   {article.content}
                 </div>
@@ -66,7 +63,7 @@
   </div>
   <!-- ENDIF config.usePagination -->
 
-  <!---- IMPORT portalmark/sns_comment.tpl ---->
+  <!-- IMPORT portalmark/sns_comment.tpl -->
 
   </div>
   <noscript>

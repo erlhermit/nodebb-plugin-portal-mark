@@ -1,9 +1,9 @@
 "use strict";
 $(window).on('action:ajaxify.start', function (ev, data) {
 	if (data && data.url.indexOf('article') == 0) {
-		// require(['cms/article'], function start(article) {
-		// 	article.init();
-		// });
+		require(['cms/article'], function start(article) {
+			article.init();
+		});
 	}
 	if (data && data.url.indexOf('portals') == 0) {
 		// require(['cms/portals'], function start(portals) {
@@ -12,11 +12,21 @@ $(window).on('action:ajaxify.start', function (ev, data) {
 	}
 });
 //
-// $(window).on('action:ajaxify.end', function (event, data) {
-// 	if (data && data.url.indexOf('article') == 0) {
-// 		$('html head').find('title').text($('meta[property="og:title"]').attr('content'));
-// 	}
-// });
+$(window).on('action:ajaxify.end', function (event, data) {
+	if (data && (data.url.indexOf('article') == 0 || data.url.indexOf('portals') == 0)) {
+		$('[data-toggle="tooltip"]').tooltip();
+	}
+	//add share link to .breadcrumb
+	if ($('#sns-share').length == 0 && $('.breadcrumb').length > 0) {
+		templates.parse('portalmark/share', {}, function (html) {
+			$('.breadcrumb').prepend('<div id="sns-share" class="pull-right"></div>');
+			$('#sns-share').prepend(html);
+		});
+	}
+	if ($('div.dropdown.share-dropdown').length > 0) {
+		$('div.dropdown.share-dropdown').remove();
+	}
+});
 //hook topic button action
 $(window).on('action:topic.loaded', function (e, data) {
 	var socketId = 'nodebb-plugin-portal-mark';

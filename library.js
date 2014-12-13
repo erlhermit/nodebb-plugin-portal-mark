@@ -138,6 +138,9 @@ var pkgjson = require('./package.json'),
 				return callback(new Error('[[error:invalid-data]]'));
 			}
 			adminCtl.unmarkTopics(socket.uid, data.tids, callback);
+		},
+		votes: function (socket, data, callback) {
+			adminCtl.getAndUpdateArticlesVies(data.tids, callback);
 		}
 	};
 
@@ -591,11 +594,42 @@ var pkgjson = require('./package.json'),
 			}
 		], callback);
 	};
+
+	adminCtl.getAndUpdateArticlesVies = function (tids, callback) {
+		if (tids) {
+			var results = {};
+			async.eachLimit(tids, 10, function (tid, next) {
+				adminCtl.getAndUpdateArticleViews(tid, function (err, value) {
+					results[tid] = err ? 0 : value;
+					next();
+				})
+			}, function (err) {
+				callback(err, results);
+			});
+		} else {
+			callback(null, null);
+		}
+	};
+	adminCtl.getAndUpdateArticleViews = function (tid, callback) {
+		callback = callback || function () {};
+		db.incrObjectFieldBy(config.database.root + ':topic:' + tid, 'views', 1, function (err, value) {
+			if (err) {
+				return callback(err);
+			}
+			db.sortedSetAdd(config.database.root + ':views', value, tid, callback);
+		});
+	};
+	adminCtl.getAllTopcisCount = function (callback) {
+
+	};
+	adminCtl.getMarkTagTopicsCount = function (tag, callback) {
+
+	};
 	adminCtl.getAllTopics = function (start, end, callback) {
-		db.getSortedSetRevRange(config.database.root + ':topics', start, end, callback);
+		db.getSortedSetRevRangeWithScores(config.database.root + ':topics', start, end, callback);
 	}
 	adminCtl.getMarkTagTopics = function (markTag, start, end, callback) {
-		db.getSortedSetRevRange(config.database.root + ':mark:' + markTag + ':topics', start, end, callback);
+		db.getSortedSetRevRangeWithScores(config.database.root + ':mark:' + markTag + ':topics', start, end, callback);
 	};
 	adminCtl.getMarkTags = function (start, end, callback) {
 		db.getSortedSetRevRangeWithScores(config.database.root + ':marks', start, end, callback);
@@ -820,7 +854,7 @@ var pkgjson = require('./package.json'),
 				},
 				function (result, next) {
 					if (result) {
-						Topics.getTopicFields(tid, ['tid', 'slug', 'uid', 'title', 'mainPid'], function (err, article) {
+						Topics.getTopicFields(tid, ['tid', 'slug', 'uid', 'title', 'thumb', 'mainPid'], function (err, article) {
 							if (article.slug != tid + '/' + slug) {
 								return helpers.notFound(req, res);
 							}
@@ -829,6 +863,17 @@ var pkgjson = require('./package.json'),
 						});
 					} else {
 						return helpers.notFound(req, res);
+					}
+				},
+				function (result, next) {
+					//get topic user
+					if (result && result.article && result.article.uid) {
+						User.getUserFields(result.article.uid, ['uid', 'username', 'userslug', 'picture', 'status'], function (err, userData) {
+							result.author = userData;
+							next(null, result);
+						});
+					} else {
+						next(null, result);
 					}
 				},
 				function (result, next) {
@@ -943,6 +988,7 @@ var pkgjson = require('./package.json'),
 				}
 				data.breadcrumbs = res.locals.breadcrumbs
 				data.sns_comment_id = config.header.article.route + '/' + data.article.slug
+				console.log(data);
 				res.render(config.template.article, data);
 			});
 	}
@@ -975,9 +1021,14 @@ var pkgjson = require('./package.json'),
 					}
 				},
 				function (results, tids, next) {
-					Topics.getTopicsFields(tids, ['tid', 'uid', 'slug', 'title', 'mainPid'], function (err, articles) {
+					var sets = tids.map(function (set) {
+						return set.value;
+					});
+					Topics.getTopicsFields(sets, ['tid', 'uid', 'slug', 'title', 'views', 'thumb', 'mainPid'], function (err, articles) {
 						for (var i = 0; i < articles.length; i++) {
 							articles[i].index = i;
+							articles[i].timestamp = utils.toISOString(tids[i].score);
+							articles[i].views = articles[i].views ? articles[i].views : 0;
 						}
 						results.articles = articles;
 						next(err, results);
@@ -1013,7 +1064,6 @@ var pkgjson = require('./package.json'),
 				}
 				data.breadcrumbs = res.locals.breadcrumbs
 				data.article_count = 100;
-				console.log(data)
 				res.render(config.template.portal, data);
 			});
 	}
