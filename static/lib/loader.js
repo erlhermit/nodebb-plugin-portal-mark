@@ -17,10 +17,12 @@ $(window).on('action:ajaxify.end', function (event, data) {
 		$('[data-toggle="tooltip"]').tooltip();
 	}
 	//add share link to .breadcrumb
-	if ($('#sns-share').length == 0 && $('.breadcrumb').length > 0) {
-		templates.parse('portalmark/share', {}, function (html) {
+	if ($('.breadcrumb').length > 0) {
+		if ($('#sns-share').length == 0) {
 			$('.breadcrumb').prepend('<div id="sns-share" class="pull-right"></div>');
-			$('#sns-share').prepend(html);
+		}
+		templates.parse('portalmark/share', {}, function (html) {
+			$('#sns-share').html(html);
 		});
 	}
 	if ($('div.dropdown.share-dropdown').length > 0) {

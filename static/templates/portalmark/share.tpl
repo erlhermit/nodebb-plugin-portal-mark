@@ -1,13 +1,8 @@
-<div class="bshare-custom">
-  <a title="分享到QQ空间" class="bshare-qzone"></a>
-  <a title="分享到新浪微博" class="bshare-sinaminiblog"></a>
-  <a title="分享到腾讯微博" class="bshare-qqmb"></a>
-  <a title="分享到网易微博" class="bshare-neteasemb"></a>
-  <a title="分享到百度空间" class="bshare-baiduhi"></a>
-  <a title="分享到豆瓣" class="bshare-douban"></a>
-  <a title="分享到人人网" class="bshare-renren"></a>
-  <a title="更多平台" class="bshare-more bshare-more-icon more-style-addthis"></a><span class="BSHARE_COUNT bshare-share-count">0</span>
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+  <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt" target="_blank"><img src="http://v3.jiathis.com/code_mini/images/btn/v1/jiathis1.gif" border="0" />
+  </a>
+  <a class="jiathis_counter_style_margin:3px 0 0 2px"></a>
 </div>
-<script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/button.js#style=-1&amp;uuid=&amp;pophcol=2&amp;lang=zh"></script>
-<a class="bshareDiv" onclick="javascript:return false;"></a>
-<script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/bshareC0.js"></script>
+<script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
