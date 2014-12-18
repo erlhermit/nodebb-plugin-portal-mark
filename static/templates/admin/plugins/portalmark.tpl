@@ -1,6 +1,6 @@
 <div class="marks tags">
   <div class="alert alert-warning">
-    <strong>Remember that only who was group by 'Master' can management portalmark at front-end.</strong>
+    <strong>Remember that only who was group by [{settings.group}] can management portalmark at front-end.</strong>
   </div>
   <!-- IF !marks.length -->
   <div class="alert alert-warning">

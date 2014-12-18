@@ -12,7 +12,6 @@ define('cms/portals', ['composer', 'forum/pagination', 'forum/infinitescroll', '
 
 	Portals.init = function () {
 		var cid = ajaxify.variables.get('portals_id');
-		console.info('useme.');
 		app.enterRoom('portals_' + cid);
 
 		$('#new_post').on('click', function () {
@@ -34,15 +33,12 @@ define('cms/portals', ['composer', 'forum/pagination', 'forum/infinitescroll', '
 				if ($(el).offset().top - $(window).scrollTop() > 0) {
 					localStorage.setItem('portals:' + cid + ':bookmark', $(el).attr('data-tid'));
 					localStorage.setItem('portals:' + cid + ':bookmark:clicked', clickedTid);
-					console.info('clicked:', clickedTid);
 					return false;
 				}
 			});
 
-			console.log(history);
 
 		});
-		console.log(history);
 
 	};
 
@@ -196,7 +192,6 @@ define('cms/portals', ['composer', 'forum/pagination', 'forum/infinitescroll', '
 		if (!utils.isNumber(after) || (after === 0 && $('#topics-container li.portals-item[data-index="0"]').length)) {
 			return;
 		}
-		console.log('load after', after);
 		// $(window).trigger('action:categories.loading');
 		// infinitescroll.loadMore('categories.loadMore', {
 		// 	cid: ajaxify.variables.get('portals_id'),

@@ -16,7 +16,7 @@ define('forum/topic/portalmark', function () {
 
 	portalmark.loadMark = function (callback) {
 		callback = callback ? callback : function () {};
-		var api_name = '.get';
+		var api_name = '.article.get';
 		socket.emit('plugins.' + socketId + api_name, {
 			tid: $('[template-variable="topic_id"]').val()
 		}, function (err, result) {
@@ -79,7 +79,7 @@ define('forum/topic/portalmark', function () {
 				if (!confirm) {
 					return;
 				}
-				socket.emit('plugins.' + socketId + '.unmark', {
+				socket.emit('plugins.' + socketId + '.article.unmark', {
 					tids: portalmark.tids
 				}, function (err) {
 					if (err) {
@@ -100,7 +100,7 @@ define('forum/topic/portalmark', function () {
 		if (!loadingEl.length) {
 			return;
 		}
-		socket.emit('plugins.' + socketId + '.marks', [portalmark.marktag], onPortalmarksLoaded);
+		socket.emit('plugins.' + socketId + '.marks.get', [portalmark.marktag], onPortalmarksLoaded);
 	}
 
 	function onPortalmarksLoaded(err, marks) {
@@ -136,7 +136,7 @@ define('forum/topic/portalmark', function () {
 	}
 
 	function markTopics() {
-		var api_name = portalmark.markAll ? '.markAll' : '.mark';
+		var api_name = portalmark.markAll ? '.article.markAll' : '.article.mark';
 		socket.emit('plugins.' + socketId + api_name, {
 			tids: portalmark.tids,
 			markTag: markTag
@@ -185,7 +185,7 @@ define('forum/topic/portalmark', function () {
 		//check is show thread-tools
 		if ($('div .thread-tools').length > 0 && $('.portalmark_thread').length == 0) {
 			//tools hook
-			var api_name = '.check';
+			var api_name = '.marks.check';
 			socket.emit('plugins.' + socketId + api_name, {
 				tid: $('[template-variable="topic_id"]').val()
 			}, function (err, result) {

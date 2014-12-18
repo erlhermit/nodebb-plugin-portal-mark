@@ -23,10 +23,12 @@
     <!-- END breadcrumbs -->
   </ol>
   <p class="btn-toolbar" role="toolbar">
+    <!-- IF subs.length -->
     <span class="btn-group btn fa fa-chevron-right" data-toggle="tooltip" data-placement="top" title="[[portalmark:title.portal.subs]]"></span>
     <!-- BEGIN subs -->
     <a class="btn-group btn btn-default" href="{relative_path}/portals/{subs.tag}">{subs.name}</a>
     <!-- END subs -->
+    <!-- ENDIF subs.length -->
 
     <!-- IF tags.length -->
     <span class="btn-group btn fa fa-chevron-up" data-toggle="tooltip" data-placement="top" title="[[portalmark:title.portal.tags]]"></span>
@@ -53,16 +55,52 @@
         <meta itemprop="name" content="{articles.title}">
         <div class="category-body">
           <div class="row">
-            <div class="col-md-8 col-sm-9">
-              <a href="{relative_path}/article/{articles.slug}">{articles.title}</a>
-              <span class="badge human-readable-number" title="{articles.views}"></span>
+            <!-- IF @first -->
+            <div class="hidden-xs">
+              <h4>
+                <a href="{relative_path}/article/{articles.slug}">{articles.title}
+                </a>
+              </h4>
+              <small>
+                {articles.description}
+              </small>
+              <div class="visible-lg text-center">
+                <a href="{relative_path}/article/{articles.slug}">
+                <img src="{articles.thumb}" alt="{articles.title}" style="width:70%;">
+              </a>
+              </div>
+              <samll class="pull-right hidden-xs">
+                发布者: {articles.author.username} | 查看数: <span class="badge human-readable-number" title="{articles.views}"></span> | <span class="timeago" title="{articles.timestamp}"></span>
+              </samll>
             </div>
-            <small>
-              <span class="pull-right timeago" title="{articles.timestamp}"></span>
+            <!-- ELSE -->
+            <div class="pull-left hidden-xs col-sm-1 col-md-1 col-lg-2 ">
+              <a class="media-middle" href="#">
+                <img src="{articles.thumb}" alt="{articles.title}" style="width:100%;">
+              </a>
+            </div>
+            <small class="pull-right">
+              <span class="timeago" title="{articles.timestamp}"></span>
+              <span class="visible-xs badge human-readable-number" title="{articles.views}"></span>
+              <span class="visible-xs auther" title="{articles.author.username}"> {articles.author.username}</span>
             </small>
+            <div class="col-lg-8">
+              <h4>
+                <a href="{relative_path}/article/{articles.slug}">{articles.title}
+                </a>
+              </h4>
+              <samll class="text-center hidden-xs">
+                发布者: {articles.author.username} | 查看数: <span class="badge human-readable-number" title="{articles.views}"></span>
+              </samll>
+              <div class="visible-lg">
+                <small>
+                  {articles.description}
+                </small>
+              </div>
+            </div>
+            <!-- ENDIF @first -->
           </div>
         </div>
-
       </li>
       <!-- END articles -->
     </ul>

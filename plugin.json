@@ -3,7 +3,7 @@
 	"name": "Portal Mark",
 	"description": "This plugin can mark topic as news article for portals site building.",
 	"url": "https://github.com/erlgo/nodebb-plugin-portal-mark",
-	"library": "./library.js",
+	"library": "./index.js",
 	"less": [
 		"static/style.less"
 	],
@@ -15,6 +15,7 @@
 		"static": "./static"
 	},
 	"templates": "static/templates",
+	"languages": "static/language",
 	"hooks": [{
 		"hook": "static:app.load",
 		"method": "init"

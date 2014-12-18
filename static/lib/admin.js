@@ -4,7 +4,7 @@ define('admin/plugins/portalmark', ['forum/infinitescroll', 'admin/modules/selec
 	var marks = {},
 		timeoutId = 0;
 	marks.init = function () {
-		//handleColorPickers();
+			//handleColorPickers();
 		selectable.enable('.tag-management', '.tag-row');
 		handleNew();
 		handleModify();
@@ -155,7 +155,7 @@ define('admin/plugins/portalmark', ['forum/infinitescroll', 'admin/modules/selec
 				marksToDelete.each(function (index, el) {
 					marks.push($(el).attr('data-tag'));
 				});
-				socket.emit('admin.plugins.' + socketId + '.removeMarks', {
+				socket.emit('admin.plugins.' + socketId + '.marks.remove', {
 					marks: marks
 				}, function (err) {
 					if (err) {
@@ -185,7 +185,7 @@ define('admin/plugins/portalmark', ['forum/infinitescroll', 'admin/modules/selec
 			name: tag.find('[data-name="mark-name"]').val(),
 			parent: tag.find('[data-name="mark-parent"]').val()
 		};
-		socket.emit('admin.plugins.' + socketId + '.update', data, function (err) {
+		socket.emit('admin.plugins.' + socketId + '.marks.update', data, function (err) {
 			if (err) {
 				return app.alertError(err.message);
 			}
@@ -200,7 +200,7 @@ define('admin/plugins/portalmark', ['forum/infinitescroll', 'admin/modules/selec
 			name: name,
 			tag: tag
 		};
-		socket.emit('admin.plugins.' + socketId + '.create', data, function (err, msg) {
+		socket.emit('admin.plugins.' + socketId + '.marks.create', data, function (err, msg) {
 			if (err) {
 				return app.alertError(err.message);
 			}

@@ -1,0 +1,30 @@
+{
+	"admin": {
+		"name": "Portal Mark",
+		"class": "",
+		"route": "/plugins/portalmark"
+	},
+	"portal": {
+		"title": "[[portalmark:title.portal]]",
+		"text": "[[portalmark:title.portal]]",
+		"iconClass": "fa-newspaper-o",
+		"class": "",
+		"route": "/portals",
+		"route_tag": "/portals/:tag?"
+	},
+	"article": {
+		"title": "[[portalmark:title.article]]",
+		"text": "[[portalmark:title.article]]",
+		"iconClass": "fa-rss",
+		"class": "",
+		"route": "/article",
+		"route_tid_slug": "/article/:tid/:slug?"
+	},
+	"forum": {
+		"title": "[[portalmark:title.forum]]",
+		"text": "[[portalmark:title.forum]]",
+		"iconClass": "fa-comments",
+		"class": "",
+		"route": "/forum"
+	}
+}
