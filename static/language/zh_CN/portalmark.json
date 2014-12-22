@@ -1,4 +1,5 @@
 {
+	"editor":"编辑",
 	"title.all": "综合列表",
 	"title.index": "列表",
 	"title.plugin": "门户新闻系统",
@@ -22,5 +23,10 @@
 	"topic_mark_success": "成功标记主题为新闻类型",
 	"topic_unmark_success": "所选主题的新闻标记已移除！",
 	"topic_unmark_warnning": "你确定要移除主题的新闻标记吗？",
-	"err_mark_tag_no_found": "标记%1 已不存在。"
+	"err_mark_tag_no_found": "标记%1 已不存在。",
+	"publisher" : "发布者: %1",
+	"author" : "作者: %1",
+	"visit" : "查看数: ",
+	"publishedby" : "发布于 ",
+	"summary" : "摘要: "
 }

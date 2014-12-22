@@ -8,8 +8,8 @@
 		"static/style.less"
 	],
 	"scripts": [
-		"static/lib/loader.js",
-		"static/lib/client"
+		"static/lib/client/",
+		"static/lib/loader.js"
 	],
 	"staticDirs": {
 		"static": "./static"

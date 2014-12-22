@@ -32,10 +32,10 @@
                   <p id="topic_title_{article.mainPid}" class="topic-title text-center" itemprop="name">{article.title}</p>
                 </h3>
                 <div class="text-center">
-                  <h6> <span>发布者: {marker.username}</span>  |  原作者: {author.username} | 查看:<span id="article-views" class=""></span> | 发表于<span class="timeago" title="{timestamp}"></span> </h6>
+                  <h6> <span>[[portalmark:publisher,{marker.username}]]</span>  |  [[portalmark:publisher,{author.username}]] | [[portalmark:visit]]:<span id="article-views" class=""></span> | [[portalmark:publishedby]]<span class="timeago" title="{timestamp}"></span> </h6>
                 </div>
                 <div class="well well-sm">
-                  <h6><strong>摘要: </strong> <small>{article.description}</small></h6>
+                  <h6><strong>[[portalmark:summary]]</strong> <small>{article.description}</small></h6>
                 </div>
                 <div id="content_{article.mainPid}" class="post-content" itemprop="text">
                   {article.content}
@@ -63,7 +63,7 @@
   </div>
   <!-- ENDIF config.usePagination -->
 
-  <!-- IMPORT portalmark/sns_comment.tpl -->
+  <!-- TODO:needs sidebar setup -->
 
   </div>
   <noscript>

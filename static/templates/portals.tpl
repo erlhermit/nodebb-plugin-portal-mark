@@ -70,7 +70,7 @@
               </a>
               </div>
               <samll class="pull-right hidden-xs">
-                发布者: {articles.author.username} | 查看数: <span class="badge human-readable-number" title="{articles.views}"></span> | <span class="timeago" title="{articles.timestamp}"></span>
+                [[portalmark:publisher,{articles.author.username}]] | [[portalmark:visit]]<span class="badge human-readable-number" title="{articles.views}"></span> | <span class="timeago" title="{articles.timestamp}"></span>
               </samll>
             </div>
             <!-- ELSE -->
@@ -82,7 +82,7 @@
             <small class="pull-right">
               <span class="timeago" title="{articles.timestamp}"></span>
               <span class="visible-xs badge human-readable-number" title="{articles.views}"></span>
-              <span class="visible-xs auther" title="{articles.author.username}"> {articles.author.username}</span>
+              <span class="visible-xs author" title="{articles.author.username}"> {articles.author.username}</span>
             </small>
             <div class="col-lg-8">
               <h4>
@@ -90,7 +90,7 @@
                 </a>
               </h4>
               <samll class="text-center hidden-xs">
-                发布者: {articles.author.username} | 查看数: <span class="badge human-readable-number" title="{articles.views}"></span>
+                [[portalmark:publisher,{articles.author.username}]] | [[portalmark:visit]]<span class="badge human-readable-number" title="{articles.views}"></span>
               </samll>
               <div class="visible-lg">
                 <small>
