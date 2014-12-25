@@ -1,60 +1,194 @@
-.articles-replies{
-
+.panel-body .articles-replies {
+  margin: -10px;
 }
-
 .articles-replies {
-	overflow-y: hidden;
-	overflow-x: hidden;
-}
+  overflow-y: hidden;
+  overflow-x: hidden;
+  .author-img {
+    margin-top: 2px;
+  }
+  ul {
+    width: 100%;
+    line-height: 16px;
+    margin-left: 1px;
+    margin-bottom: 1px;
+    padding: 5px 5px 5px 0;
+    list-style-type: none;
+    li {
+      clear: both;
+      line-height: 17px;
+      margin-bottom: 0;
+      &:last-child {
+        margin-bottom: 0;
 
-.articles-replies ul {
-	width: 100%;
-	line-height: 16px;
-	margin-left: 1px;
-	padding: 5px 5px 5px 0px;
-	list-style-type: none;
-}
+      }
+      & > div {
+        max-height: 250px;
+        overflow: hidden;
+        position: relative;
+      }
+      &.article-thumb-list {
+        border: 1px solid #e1e1e1;
+        width: 195px;
+        height: 220px;
+        font-size: 14px;
+        float: left;
+        margin: 4px;
+        position: relative;
+        clear: none;
+      }
+      &.article-thumb-list {
+        .description {
+          height: 320px;
+        }
 
-.articles-replies ul li {
-	clear: both;
-	line-height: 17px;
-	margin-bottom: 0px;
-}
+      }
+      .author-img {
+        display: block;
+        float: left;
+        margin-right: 8px;
+        width: 26px;
+        height: 26px;
+      }
+      p {
+        display: block;
+        margin: 5px 0;
+        font-size: 14px;
+        word-break: break-word;
 
-.articles-replies ul li:last-child {
-	margin-bottom: 0;
-}
+      }
+      span {
+        font-size: 12px;
+        overflow: hidden;
+        height: 16px;
+      }
+      .pull-right {
+        margin: 5px 0;
+      }
+      .item-cover {
+        width: 195px;
+        height: 160px;
+        display: block;
+        background-repeat: no-repeat;
+        background-position: center center;
 
-.articles-replies ul li .author-img {
-	display: block;
-	float: left;
-	margin-right:8px;
-	width:26px;
-	height:26px;
-}
+      }
+      p.item-intro {
+        font-size: 12px;
 
-.articles-replies ul li > div {
-	max-height: 250px;
-	overflow:hidden;
-	position:relative;
-}
+      }
+      h3.item-title {
+        font-size: 14px;
+        margin: 0;
+      }
+      div.item-info {
+        padding: 0 10px 10px;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        background-color: rgba(255,255,255,.9);
+        min-height: 70px;
+        height: auto;
+        _height: 180px;
+        width: 195px;
+        overflow: visible;
 
-.articles-replies ul li p {
-	display: block;
-	margin:5px 0 ;
-	font-size: 14px;
-	word-break: break-word;
-}
+        .author-img {
+          width: 62px;
+          height: 62px;
+          border: 5px solid #fff;
+          border-radius: 62px;
+          overflow: hidden;
+          margin: -32px auto 0;
+          _margin-bottom: -24px;
+          position: relative;
+          behavior: url("/static/magazine/widget/authorColumn/PIE.htc");
+          background-position: center center;
+          background-repeat: no-repeat;
+          background-size: 62px 62px;
+        }
+        .author-name {
+          display: block;
+          font-weight: 400;
+          margin-top: 6px;
+        }
+      }
+    }
 
-.articles-replies ul li span {
-	font-size: 12px;
-	overflow: hidden;
-	height: 16px;
-}
-.articles-replies ul li .pull-right {
-	margin:5px 0 ;
-}
+  }
+  &.cover-preview-wrapper {
+    overflow: hidden;
+    position: relative;
+    width: 440px;
+    height: 220px;
+    margin: 0;
+    padding: 0;
+    .cover-preview {
+      margin: 0;
+      padding: 0;
+      li {
+        margin: 0;
+        padding: 0;
+        list-style-type: none;
+        clear: none;
+        float: left;
+        overflow: hidden;
+      }
 
-.articles-replies .author-img {
-	margin-top: 2px;
+    }
+    .cover-bottom {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 35px;
+      background: rgba(0,0,0,0.7);
+      .title {
+        position: absolute;
+        display: inline-block;
+        left: 20px;
+        top: 0;
+        height: 35px;
+        line-height: 35px;
+        width: 50%;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        color: #fff;
+        font-size: 14px;
+        a {
+          color: #fff;
+          outline: none;
+          text-decoration: none;
+          cursor: pointer;
+        }
+      }
+
+    }
+    ul.cover-slider-bar {
+      position: absolute;
+      right: 5px;
+      bottom: 5px;
+      overflow: hidden;
+      padding: 2px 5px;
+      list-style-type: none;
+      zoom: 1;
+			width:initial;
+      li {
+        clear: none;
+        display: list-item;
+        float: left;
+        cursor: pointer;
+        width: 12px;
+        height: 12px;
+        margin: 2px 0;
+        padding: 0;
+        color:#fff;
+        &.on {
+          width: 14px;
+          height: 14px;
+        }
+      }
+    }
+  }
 }

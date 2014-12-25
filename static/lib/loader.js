@@ -10,9 +10,16 @@ $(window).on('action:ajaxify.start', function (ev, data) {
 			portals.init();
 		});
 	}
+
 });
+
+
 //
 $(window).on('action:ajaxify.end', function (event, data) {
+	require(['partials/articlescover'],function(cover){
+		cover.parse('.cover-preview-wrapper');
+	});
+
 	if (data && (data.url.indexOf('article') == 0 || data.url.indexOf('portals') == 0)) {
 		$('[data-toggle="tooltip"]').tooltip();
 	}

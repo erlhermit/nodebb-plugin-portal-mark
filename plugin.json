@@ -46,5 +46,8 @@
 	}, {
 		"hook": "filter:widget.render:popularArticles",
 		"method": "filter.widget.render.popularArticles"
+	}, {
+		"hook": "filter:widget.render:coverArticles",
+		"method": "filter.widget.render.coverArticles"
 	}]
 }
