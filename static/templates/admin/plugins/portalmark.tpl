@@ -9,7 +9,7 @@
   <!-- ENDIF !marks.length -->
   <div class="new-mark-modal hidden">
     <div class="form-group">
-      <label for="markTag">Mark Tag* <span class="label label-warning">can not modify</span>
+      <label for="markTag">Mark Tag* <span class="label label-warning">can not modify,please let the string match[a-zA-Z0-9_-]</span>
       </label>
       <input id="markTag" placeholder="tag for url" data-name="mark-tag" class="form-control" />
       <label for="markName">Mark Name</label>

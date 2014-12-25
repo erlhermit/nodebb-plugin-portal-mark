@@ -23,6 +23,12 @@
 		"hook": "filter:privileges.topics.get",
 		"method": "filter.privileges.topics.get"
 	}, {
+		"hook": "filter:widgets.getAreas",
+		"method": "filter.widgets.getAreas"
+	}, {
+		"hook": "filter:widgets.getWidgets",
+		"method": "filter.widgets.getWidgets"
+	}, {
 		"hook": "filter:topic.thread_tools",
 		"method": "filter.topic.thread_tools"
 	}, {
@@ -34,6 +40,12 @@
 	}, {
 		"hook": "filter:admin.header.build",
 		"method": "filter.admin.header.build"
+	}, {
+		"hook": "filter:widget.render:recentArticles",
+		"method": "filter.widget.render.recentArticles"
+	}, {
+		"hook": "filter:widget.render:popularArticles",
+		"method": "filter.widget.render.popularArticles"
 	}],
 	"compatibility": "~0.6.0"
 }

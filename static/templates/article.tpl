@@ -18,7 +18,7 @@
     <!-- END breadcrumbs -->
   </ol>
 
-  <ul id="post-container" class="posts" data-tid="{tid}">
+  <ul id="post-container" class="posts" data-tid="{article.tid}">
     <li class="post-row" data-pid="{article.pid}" data-uid="{author.uid}" data-username="{author.username}" data-userslug="{author.userslug}" data-index="{article.index}" data-timestamp="{timestamp}" itemscope itemtype="http://schema.org/Comment">
       <meta itemprop="datePublished" content="{article.relativeTime}">
       <meta itemprop="dateModified" content="{article.relativeEditTime}">
@@ -63,8 +63,11 @@
   </div>
   <!-- ENDIF config.usePagination -->
 
-  <!-- TODO:needs sidebar setup -->
-
+  <div widget-area="comment">
+    <!-- BEGIN widgets -->
+    {widgets.html}
+    <!-- END widgets -->
+  </div>
   </div>
   <noscript>
     <div class="text-center">
