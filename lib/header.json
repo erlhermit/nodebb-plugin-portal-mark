@@ -9,6 +9,7 @@
 		"text": "[[portalmark:title.portal]]",
 		"iconClass": "fa-newspaper-o",
 		"class": "",
+		"textClass": "visible-xs-inline",
 		"route": "/portals",
 		"route_tag": "/portals/:tag?"
 	},
@@ -17,6 +18,7 @@
 		"text": "[[portalmark:title.article]]",
 		"iconClass": "fa-rss",
 		"class": "",
+		"textClass": "visible-xs-inline",
 		"route": "/article",
 		"route_tid_slug": "/article/:tid/:slug?"
 	},
