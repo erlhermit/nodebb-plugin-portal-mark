@@ -48,6 +48,7 @@
           <div class="row">
           </div>
         </div>
+      </div>
     </li>
 
   </ul>
@@ -63,12 +64,7 @@
   </div>
   <!-- ENDIF config.usePagination -->
 
-  <div widget-area="comment">
-    <!-- BEGIN widgets -->
-    {widgets.html}
-    <!-- END widgets -->
-  </div>
-  </div>
+  <div widget-area="comment" class="widget-comment"></div>
   <noscript>
     <div class="text-center">
       <ul class="pagination">
@@ -80,3 +76,4 @@
       </ul>
     </div>
   </noscript>
+</div>
