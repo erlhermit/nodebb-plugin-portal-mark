@@ -1,7 +1,7 @@
   <ul class="cover-preview clearfix">
     <!-- BEGIN articles -->
     <li>
-      <a target="_blank" href="{config.relative_path}/article/{articles.slug}"><img src="{articles.thumb}">
+      <a href="{config.relative_path}/article/{articles.slug}"><img src="{articles.thumb}">
       </a>
     </li>
     <!-- END articles -->

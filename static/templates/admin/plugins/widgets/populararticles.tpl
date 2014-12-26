@@ -1,5 +1,10 @@
 <label>Amount of Articles to display:</label>
 <input type="text" class="form-control" name="numArticles" placeholder="5" />
+<label>Custom Articles to display:
+  <br />
+  <small>Leave blank to ingnore</small>
+</label>
+<input type="text" class="form-control" name="showArticles" placeholder="input articles ids, split use ','" />
 <label>
   Custom Portal:
   <br />
